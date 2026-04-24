@@ -6,7 +6,7 @@
 
 AegisLink 是一套面向多 Agent 协作场景的身份认证与权限管控基础设施。
 
-在 AI Agent 时代，工作流从传统的 `User → App` 演变为 `User → Agent A → Agent B → Service C` 的多级调用链，传统 IAM 体系的安全假设被彻底打破。AegisLink 为这条信任链中的每一个 Agent 铸造可验证的数字身份，以能力声明定义权限边界，以委托协议传递信任上下文，以实时策略引擎拦截越权行为，以全链路审计日志实现行为可追溯——为 AI Agent 的企业级落地筑牢安全底座。
+在 AI Agent 时代，工作流从传统的 `User → App` 演变为 `User → Agent A → Agent B → Service C` 的多级调用链，传统 IAM 体系的安全假设被彻底打破。AegisLink 为这条信任链中的每一个 Agent 铸造可验证的数字身份，以能力声明定义权限边界，以委托协议传递信任上下文，以实时策略引擎拦截越权行为，以全链路审计日志实现行为可追溯,为 AI Agent 的企业级落地筑牢安全底座。
 
 ### 核心能力
 
