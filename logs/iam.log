@@ -1,0 +1,33 @@
+/Users/elwood/Desktop/test/AegisLink/src/iam/service.py:24: DeprecationWarning: 
+        on_event is deprecated, use lifespan event handlers instead.
+
+        Read more about it in the
+        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+        
+  @app.on_event("startup")
+INFO:     Started server process [97099]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+[ALERT:INFO] AegisLink IAM服务启动
+INFO:     127.0.0.1:58935 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58937 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58937 - "GET /monitoring/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58935 - "GET /monitoring/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58995 - "GET /audit/logs?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59067 - "GET /audit/logs?limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59069 - "GET /audit/logs?limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59069 - "GET /monitoring/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59067 - "GET /monitoring/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59067 - "GET /monitoring/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59069 - "GET /monitoring/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59069 - "GET /capabilities/all HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59069 - "GET /capabilities/all HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59078 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59078 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59081 - "GET /monitoring/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59078 - "GET /monitoring/metrics HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [97099]
