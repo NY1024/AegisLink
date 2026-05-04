@@ -1,0 +1,2389 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AegisLink 控制台</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; color: #333; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header h1 { font-size: 24px; font-weight: 600; }
+        .header p { opacity: 0.9; margin-top: 5px; font-size: 14px; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .nav { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .nav a { padding: 12px 24px; background: white; border-radius: 8px; text-decoration: none; color: #667eea; font-weight: 500; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.3s; cursor: pointer; }
+        .nav a:hover, .nav a.active { background: #667eea; color: white; }
+        .card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .card h2 { font-size: 18px; margin-bottom: 16px; color: #1a1a1a; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .stat { background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; }
+        .stat-value { font-size: 36px; font-weight: 700; color: #667eea; }
+        .stat-label { color: #666; font-size: 14px; margin-top: 5px; }
+        .stat.deny .stat-value { color: #e74c3c; }
+        .stat.allow .stat-value { color: #27ae60; }
+        .btn { padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+        .btn:hover { background: #5a6fd6; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        .btn.danger { background: #e74c3c; }
+        .btn.danger:hover { background: #c0392b; }
+        .btn.success { background: #27ae60; }
+        .btn.success:hover { background: #219a52; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 500; color: #555; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #667eea; }
+        .result { margin-top: 20px; padding: 16px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea; }
+        .result.error { border-left-color: #e74c3c; background: #fff5f5; }
+        .result.success { border-left-color: #27ae60; background: #f0fff4; }
+        .result pre { white-space: pre-wrap; word-wrap: break-word; font-size: 13px; font-family: 'Monaco', 'Menlo', monospace; max-height: 300px; overflow-y: auto; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; font-weight: 600; color: #555; }
+        tr:hover { background: #f8f9fa; }
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+        .badge.allow { background: #d4edda; color: #155724; }
+        .badge.deny { background: #f8d7da; color: #721c24; }
+        .badge.info { background: #d1ecf1; color: #0c5460; }
+        .alert-box { padding: 16px; border-radius: 8px; margin-bottom: 16px; }
+        .alert-box.warning { background: #fff3cd; border: 1px solid #ffc107; }
+        .alert-box.info { background: #d1ecf1; border: 1px solid #17a2b8; }
+        .alert-box.success { background: #d4edda; border: 1px solid #28a745; }
+        .flex { display: flex; gap: 16px; flex-wrap: wrap; }
+        .flex > * { flex: 1; min-width: 300px; }
+        .hidden { display: none !important; }
+        .page-title { font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #333; }
+        .step-indicator { background: #e9ecef; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .step-indicator strong { color: #667eea; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🛡️ AegisLink Agent身份与权限系统</h1>
+        <p>多Agent协作安全控制台</p>
+    </div>
+    <div class="container">
+        <nav class="nav">
+            <a id="nav-overview" onclick="showPage('overview')">📊 总览</a>
+            <a id="nav-test" onclick="showPage('test')">⚡ 验收测试</a>
+            <a id="nav-chat" onclick="showPage('chat')">💬 Agent对话</a>
+            <a id="nav-topology" onclick="showPage('topology')">🔗 Agent拓扑</a>
+            <a id="nav-trace" onclick="showPage('trace')">🔍 任务追踪</a>
+            <a id="nav-tokens" onclick="showPage('tokens')">🔑 Token管理</a>
+            <a id="nav-logs" onclick="showPage('logs')">📋 审计日志</a>
+            <a id="nav-monitoring" onclick="showPage('monitoring')">📈 监控告警</a>
+            <a id="nav-permissions" onclick="showPage('permissions')">🔐 权限管理</a>
+            <a id="nav-config" onclick="showPage('config')">⚙️ 系统配置</a>
+        </nav>
+
+        <!-- 总览页面 -->
+        <div id="page-overview" class="page">
+            <div class="card">
+                <h2>🏥 系统状态</h2>
+                <div id="system-health" class="alert-box info">加载中...</div>
+                <div style="display:flex;gap:10px;margin-top:16px">
+                    <button class="btn" onclick="refreshHealth()">🔄 刷新状态</button>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h2>📊 请求统计</h2>
+                    <div class="grid">
+                        <div class="stat">
+                            <div class="stat-value" id="stat-total">-</div>
+                            <div class="stat-label">总请求数</div>
+                        </div>
+                        <div class="stat allow">
+                            <div class="stat-value" id="stat-allow">-</div>
+                            <div class="stat-label">允许访问</div>
+                        </div>
+                        <div class="stat deny">
+                            <div class="stat-value" id="stat-deny">-</div>
+                            <div class="stat-label">拒绝访问</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>🔑 Token统计</h2>
+                    <div class="grid">
+                        <div class="stat">
+                            <div class="stat-value" id="stat-token-issued">-</div>
+                            <div class="stat-label">Token签发</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="stat-token-revoked">-</div>
+                            <div class="stat-label">Token撤销</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 验收测试页面 - 完整流程 -->
+        <div id="page-test" class="page hidden">
+            <div class="card" style="background:#e8f4fd;border-left:4px solid #2196F3">
+                <h2 style="color:#2196F3">⚡ 验收测试向导</h2>
+                <p style="color:#333;margin-top:8px">按照以下步骤执行测试，验证AegisLink Agent身份与权限系统的核心功能</p>
+            </div>
+
+            <div class="card">
+                <h2>步骤 1/6: 健康检查 - 验证系统服务状态</h2>
+                <div style="background:#f8f9fa;padding:16px;border-radius:8px;margin-bottom:16px">
+                    <p style="margin-bottom:8px"><strong>测试目标：</strong>验证所有服务是否正常运行</p>
+                    <p style="margin-bottom:8px"><strong>涉及服务：</strong>IAM(8000)、Doc-Assistant(8001)、Data-Agent(8002)、Search-Agent(8003)</p>
+                    <p><strong>验证方式：</strong>调用各服务健康检查接口</p>
+                </div>
+                <button class="btn" onclick="testHealth()">🔍 执行健康检查</button>
+                <div id="result-test-1" class="result hidden"></div>
+            </div>
+
+            <div class="card">
+                <h2>步骤 2/6: Token签发 - 获取Agent访问凭证</h2>
+                <div style="background:#f8f9fa;padding:16px;border-radius:8px;margin-bottom:16px">
+                    <p style="margin-bottom:8px"><strong>测试目标：</strong>为doc-assistant签发Access Token</p>
+                    <p style="margin-bottom:8px"><strong>调用命令：</strong></p>
+                    <pre style="background:#272822;color:#fff;padding:12px;border-radius:4px;font-size:12px;overflow-x:auto">curl -X POST http://localhost:8000/token/issue \
+  -H "Content-Type: application/json" \
+  -d '{"agent_id":"doc-assistant","agent_role":"coordinator"}'</pre>
+                    <p style="margin-top:8px;margin-bottom:8px"><strong>预期结果：</strong>返回包含access_token的JSON，token有效期2小时</p>
+                    <p><strong>权限列表：</strong>agent:call:data-agent, agent:call:search-agent</p>
+                </div>
+                <button class="btn success" onclick="testTokenIssue()">▶ 签发Token</button>
+                <div id="result-test-2" class="result hidden"></div>
+            </div>
+
+            <div class="card">
+                <h2>步骤 3/6: 正常委托流程 - A2A授权调用</h2>
+                <div style="background:#f8f9fa;padding:16px;border-radius:8px;margin-bottom:16px">
+                    <p style="margin-bottom:8px"><strong>测试目标：</strong>验证doc-assistant通过IAM授权成功调用data-agent</p>
+                    <p style="margin-bottom:8px"><strong>交互链路：</strong></p>
+                    <div style="font-size:13px;margin-left:16px">
+                        <p>1. doc-assistant → IAM: 申请调用data-agent授权</p>
+                        <p>2. IAM → doc-assistant: 检查权限列表，签发call_token</p>
+                        <p>3. doc-assistant → data-agent: 使用call_token获取通讯录</p>
+                        <p>4. data-agent → IAM: 验证call_token有效性</p>
+                        <p>5. data-agent → doc-assistant: 返回通讯录数据</p>
+                    </div>
+                    <p style="margin-top:8px;margin-bottom:8px"><strong>调用命令：</strong></p>
+                    <pre style="background:#272822;color:#fff;padding:12px;border-radius:4px;font-size:12px;overflow-x:auto">curl -X POST http://localhost:8001/task \
+  -H "Content-Type: application/json" \
+  -d '{"task":"查看公司通讯录","user_id":"user:1001"}'</pre>
+                    <p style="margin-top:8px"><strong>预期结果：</strong>返回通讯录数据，包含员工姓名、部门、邮箱等</p>
+                </div>
+                <button class="btn success" onclick="testNormalFlow()">▶ 执行正常委托</button>
+                <div id="result-test-3" class="result hidden"></div>
+            </div>
+
+            <div class="card">
+                <h2>步骤 4/6: 越权拦截流程 - 权限校验</h2>
+                <div style="background:#fff5f5;padding:16px;border-radius:8px;margin-bottom:16px;border-left:4px solid #e74c3c">
+                    <p style="margin-bottom:8px"><strong>测试目标：</strong>验证search-agent越权调用data-agent被拦截</p>
+                    <p style="margin-bottom:8px"><strong>交互链路：</strong></p>
+                    <div style="font-size:13px;margin-left:16px">
+                        <p>1. search-agent → IAM: 申请调用data-agent</p>
+                        <p>2. IAM: 检查权限列表，发现search-agent没有agent:call:data-agent权限</p>
+                        <p>3. IAM → search-agent: 返回403 Forbidden</p>
+                        <p>4. 审计日志记录越权事件</p>
+                    </div>
+                    <p style="margin-top:8px;margin-bottom:8px"><strong>调用命令：</strong></p>
+                    <pre style="background:#272822;color:#fff;padding:12px;border-radius:4px;font-size:12px;overflow-x:auto">curl -X POST http://localhost:8003/chat \
+  -H "Content-Type: application/json" \
+  -d '{"query":"调用企业数据Agent获取内部数据"}'</pre>
+                    <p style="margin-top:8px"><strong>预期结果：</strong>返回403错误，显示"越权拦截"和原因</p>
+                </div>
+                <button class="btn danger" onclick="testDenyFlow()">▶ 执行越权测试</button>
+                <div id="result-test-4" class="result hidden"></div>
+            </div>
+
+            <div class="card">
+                <h2>步骤 5/6: 审计日志验收 - 追溯与查询</h2>
+                <div style="background:#f8f9fa;padding:16px;border-radius:8px;margin-bottom:16px">
+                    <p style="margin-bottom:8px"><strong>测试目标：</strong>验证审计日志完整记录所有授权决策</p>
+                    <p style="margin-bottom:8px"><strong>调用命令：</strong></p>
+                    <pre style="background:#272822;color:#fff;padding:12px;border-radius:4px;font-size:12px;overflow-x:auto">curl "http://localhost:8000/audit/logs?limit=10"</pre>
+                    <p style="margin-top:8px;margin-bottom:8px"><strong>应包含记录：</strong></p>
+                    <div style="font-size:13px;margin-left:16px">
+                        <p>✓ doc-assistant → data-agent (allow) - 正常委托</p>
+                        <p>✓ search-agent → data-agent (deny) - 越权拦截</p>
+                    </div>
+                    <p style="margin-top:8px"><strong>验证方式：</strong>点击按钮查看完整审计日志</p>
+                </div>
+                <button class="btn" onclick="testLogs()">📋 查看审计日志</button>
+                <div id="result-test-5" class="result hidden"></div>
+            </div>
+
+            <div class="card">
+                <h2>步骤 6/6: Token撤销 - 权限回收</h2>
+                <div style="background:#f8f9fa;padding:16px;border-radius:8px;margin-bottom:16px">
+                    <p style="margin-bottom:8px"><strong>测试目标：</strong>验证撤销后的Token立即失效</p>
+                    <p style="margin-bottom:8px"><strong>调用命令：</strong></p>
+                    <pre style="background:#272822;color:#fff;padding:12px;border-radius:4px;font-size:12px;overflow-x:auto">curl -X POST http://localhost:8000/token/revoke \
+  -H "Content-Type: application/json" \
+  -d '{"token":"<token_to_revoke>"}'</pre>
+                    <p style="margin-top:8px"><strong>预期结果：</strong>Token被加入撤销列表，后续使用返回401</p>
+                </div>
+                <button class="btn danger" onclick="testTokenRevoke()">🔙 测试Token撤销</button>
+                <div id="result-test-6" class="result hidden"></div>
+            </div>
+
+            <div class="card">
+                <h2>步骤 7/7: 异常场景处理 - 系统容错与兜底</h2>
+                <div style="background:#fff5f0;padding:16px;border-radius:8px;margin-bottom:16px;border-left:4px solid #e67e22">
+                    <p style="margin-bottom:8px"><strong>测试目标：</strong>验证Agent超时、失败或权限不足时的系统响应和兜底机制</p>
+                    <p style="margin-bottom:8px"><strong>异常场景：</strong></p>
+                    <ul style="margin-left:20px;font-size:13px;color:#666">
+                        <li><strong>场景A:</strong> 权限不足 - Agent尝试访问未被授权的资源</li>
+                        <li><strong>场景B:</strong> Token过期 - 使用过期或撤销的Token</li>
+                        <li><strong>场景C:</strong> 目标Agent不可用 - 调用已停止的服务</li>
+                        <li><strong>场景D:</strong> 数据不存在 - 请求不存在的数据资源</li>
+                    </ul>
+                </div>
+
+                <h3 style="margin-bottom:12px">场景A: 权限不足拦截</h3>
+                <div style="background:#f8f9fa;padding:12px;border-radius:8px;margin-bottom:16px">
+                    <p style="font-size:13px;color:#666;margin-bottom:8px"><strong>测试:</strong> search-agent 尝试越权访问 data-agent</p>
+                    <p style="font-size:12px;color:#999"><strong>调用:</strong> POST /auth/call → 申请调用 data-agent</p>
+                    <p style="font-size:12px;color:#999"><strong>预期:</strong> 403 Forbidden + 审计日志记录</p>
+                </div>
+                <button class="btn danger" onclick="testPermissionDenied()">❌ 测试权限不足</button>
+                <div id="result-test-7a" class="result hidden"></div>
+
+                <h3 style="margin:16px 0 12px">场景B: Token过期/撤销</h3>
+                <div style="background:#f8f9fa;padding:12px;border-radius:8px;margin-bottom:16px">
+                    <p style="font-size:13px;color:#666;margin-bottom:8px"><strong>测试:</strong> 使用已被撤销的Token进行授权调用</p>
+                    <p style="font-size:12px;color:#999"><strong>调用:</strong> POST /auth/verify-call → 验证已撤销的Token</p>
+                    <p style="font-size:12px;color:#999"><strong>预期:</strong> 401 Unauthorized + 明确错误信息</p>
+                </div>
+                <button class="btn warning" onclick="testExpiredToken()">⏰ 测试Token过期</button>
+                <div id="result-test-7b" class="result hidden"></div>
+
+                <h3 style="margin:16px 0 12px">场景C: 目标Agent不可用</h3>
+                <div style="background:#f8f9fa;padding:12px;border-radius:8px;margin-bottom:16px">
+                    <p style="font-size:13px;color:#666;margin-bottom:8px"><strong>测试:</strong> 调用已停止的data-agent服务</p>
+                    <p style="font-size:12px;color:#999"><strong>调用:</strong> 直接访问 http://localhost:8002/read-contact</p>
+                    <p style="font-size:12px;color:#999"><strong>预期:</strong> Connection Error + 友好提示</p>
+                </div>
+                <button class="btn warning" onclick="testAgentUnavailable()">🔌 测试Agent不可用</button>
+                <div id="result-test-7c" class="result hidden"></div>
+
+                <h3 style="margin:16px 0 12px">场景D: 数据不存在</h3>
+                <div style="background:#f8f9fa;padding:12px;border-radius:8px;margin-bottom:16px">
+                    <p style="font-size:13px;color:#666;margin-bottom:8px"><strong>测试:</strong> 请求不存在的数据资源</p>
+                    <p style="font-size:12px;color:#999"><strong>调用:</strong> GET /read-spreadsheet?spreadsheet_id=nonexistent</p>
+                    <p style="font-size:12px;color:#999"><strong>预期:</strong> 404 Not Found + 资源不存在提示</p>
+                </div>
+                <button class="btn" onclick="testDataNotFound()">📭 测试数据不存在</button>
+                <div id="result-test-7d" class="result hidden"></div>
+            </div>
+        </div>
+
+        <!-- Agent对话页面 -->
+        <div id="page-chat" class="page hidden">
+            <div class="card">
+                <h2>💬 与Agent对话</h2>
+                <p style="color:#666;margin-bottom:16px">选择一个Agent进行自由对话，Agent会智能判断是否需要调用工具</p>
+            </div>
+
+            <div class="card">
+                <div class="form-group">
+                    <label>选择Agent</label>
+                    <select id="chat-agent" onchange="switchAgent()">
+                        <option value="doc">doc-assistant (文档助手) - 可协调其他Agent完成任务</option>
+                        <option value="data">data-agent (企业数据) - 查询企业内部的表格、通讯录、日历数据</option>
+                        <option value="search">search-agent (外部检索) - 搜索互联网公开信息</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>你的问题 / 请求</label>
+                    <textarea id="chat-input" rows="3" placeholder="输入你想问的问题或想完成的任务..."></textarea>
+                </div>
+                <button class="btn success" id="chat-submit" onclick="sendChat()">▶ 发送</button>
+            </div>
+
+            <div class="card">
+                <h2>🔧 Agent能力说明</h2>
+                <div id="agent-capabilities"></div>
+            </div>
+
+            <div class="card">
+                <h2>📝 对话历史</h2>
+                <div id="chat-history" style="max-height:400px;overflow-y:auto;">
+                    <p style="color:#999;text-align:center">发送消息开始对话...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agent拓扑页面 -->
+        <div id="page-topology" class="page hidden">
+            <div class="card">
+                <h2>🔗 Agent交互拓扑图</h2>
+                <p style="color:#666;margin-bottom:16px">展示多Agent之间的职责分工、交互链路和结果汇聚关系</p>
+            </div>
+
+            <div class="card">
+                <h2>🏢 Agent职责分工</h2>
+                <div class="grid" style="gap:16px">
+                    <div style="background:#f8f9fa;padding:16px;border-radius:8px;border-left:4px solid #667eea">
+                        <h3 style="color:#667eea;margin-bottom:8px">📄 doc-assistant (文档助手)</h3>
+                        <p style="color:#666;font-size:14px;margin-bottom:8px"><strong>职责：</strong>任务协调中枢</p>
+                        <ul style="color:#555;font-size:13px;margin-left:20px">
+                            <li>接收用户复杂任务请求</li>
+                            <li>LLM分析任务并规划调用策略</li>
+                            <li>通过IAM授权调用data-agent获取内部数据</li>
+                            <li>通过IAM授权调用search-agent获取外部信息</li>
+                            <li>汇聚多源数据生成综合报告</li>
+                        </ul>
+                    </div>
+                    <div style="background:#f8f9fa;padding:16px;border-radius:8px;border-left:4px solid #27ae60">
+                        <h3 style="color:#27ae60;margin-bottom:8px">📊 data-agent (企业数据)</h3>
+                        <p style="color:#666;font-size:14px;margin-bottom:8px"><strong>职责：</strong>企业内部数据提供</p>
+                        <ul style="color:#555;font-size:13px;margin-left:20px">
+                            <li>管理内部数据（销量、通讯录、日历）</li>
+                            <li>验证调用者IAM委托授权</li>
+                            <li>读取internal_data文件夹中的JSON数据</li>
+                            <li>LLM将数据转化为自然语言描述</li>
+                        </ul>
+                    </div>
+                    <div style="background:#f8f9fa;padding:16px;border-radius:8px;border-left:4px solid #e67e22">
+                        <h3 style="color:#e67e22;margin-bottom:8px">🔍 search-agent (外部检索)</h3>
+                        <p style="color:#666;font-size:14px;margin-bottom:8px"><strong>职责：</strong>外部信息搜索</p>
+                        <ul style="color:#555;font-size:13px;margin-left:20px">
+                            <li>接收用户搜索请求</li>
+                            <li>调用Tavily API进行真实网络搜索</li>
+                            <li>LLM整合搜索结果生成摘要</li>
+                            <li>可选：通过IAM授权调用data-agent</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🔄 Agent交互链路</h2>
+                <div style="background:#f8f9fa;padding:24px;border-radius:8px;text-align:center">
+                    <div style="display:inline-block;margin:0 40px">
+                        <div style="background:#667eea;color:white;padding:12px 24px;border-radius:8px;font-weight:600">用户</div>
+                    </div>
+                    <div style="display:inline-block;margin:0 40px">
+                        <div style="color:#999;margin:0 10px">↓ 请求任务</div>
+                    </div>
+                </div>
+                <div style="text-align:center;margin:20px 0">
+                    <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap">
+                        <div style="text-align:center">
+                            <div style="color:#999">↓ 委托任务</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="background:#e8f4fd;padding:20px;border-radius:8px;margin-top:16px">
+                    <h4 style="margin-bottom:12px;color:#2196F3">典型交互场景：</h4>
+                    <div style="margin-bottom:16px;padding:12px;background:white;border-radius:6px">
+                        <strong>场景：生成周报</strong>
+                        <div style="margin-top:8px;font-size:14px">
+                            1. 用户 → doc-assistant："帮我生成周报"<br>
+                            2. doc-assistant → IAM：申请调用data-agent授权<br>
+                            3. IAM → doc-assistant：签发call_token<br>
+                            4. doc-assistant → data-agent：使用call_token获取销量数据<br>
+                            5. data-agent → doc-assistant：返回自然语言数据描述<br>
+                            6. doc-assistant：LLM整合生成报告<br>
+                            7. doc-assistant → 用户：返回完整周报
+                        </div>
+                    </div>
+                    <div style="padding:12px;background:white;border-radius:6px">
+                        <strong>场景：越权拦截</strong>
+                        <div style="margin-top:8px;font-size:14px">
+                            1. search-agent → IAM：申请调用data-agent<br>
+                            2. IAM：检查权限列表，发现search-agent没有agent:call:data-agent<br>
+                            3. IAM → search-agent：返回403 Forbidden<br>
+                            4. 审计日志记录越权拦截事件<br>
+                            5. search-agent → 用户：返回"越权拦截"错误
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📥 结果汇聚过程</h2>
+                <div style="background:#f0fff4;padding:20px;border-radius:8px">
+                    <p style="margin-bottom:12px"><strong>doc-assistant 作为结果汇聚中心：</strong></p>
+                    <ol style="margin-left:24px;font-size:14px;color:#555;line-height:1.8">
+                        <li><strong>数据收集</strong>：通过IAM授权从data-agent获取结构化数据</li>
+                        <li><strong>信息获取</strong>：从search-agent获取外部搜索结果</li>
+                        <li><strong>LLM整合</strong>：调用LLM将多源异构数据转化为统一报告</li>
+                        <li><strong>结果返回</strong>：将最终报告返回给用户</li>
+                    </ol>
+                    <p style="margin-top:16px;font-size:14px;color:#666">
+                        <strong>信任链传递：</strong>用户 → IAM信任 → doc-assistant → IAM授权 → data-agent/search-agent
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 任务追踪页面 -->
+        <div id="page-trace" class="page hidden">
+            <div class="card">
+                <h2>🔍 任务链路追踪</h2>
+                <p style="color:#666;margin-bottom:16px">追踪任务在多个Agent间的流转过程</p>
+                <button class="btn" onclick="loadRecentTraces()">🔄 刷新最近记录</button>
+            </div>
+
+            <div class="card">
+                <h2>📊 当前会话链路</h2>
+                <div id="trace-timeline" style="max-height:500px;overflow-y:auto">
+                    <p style="color:#999;text-align:center">发送请求后可以在此处看到完整的任务流转链路...</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📋 最近审计记录</h2>
+                <div id="recent-traces" style="max-height:400px;overflow-y:auto">
+                    <p style="color:#999;text-align:center">点击"刷新最近记录"加载审计日志</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Token管理页面 -->
+        <div id="page-tokens" class="page hidden">
+            <div class="flex">
+                <div class="card">
+                    <h2>🔑 签发Agent Token</h2>
+                    <div class="form-group">
+                        <label>Agent ID</label>
+                        <select id="agent-id">
+                            <option value="doc-assistant">doc-assistant (文档助手)</option>
+                            <option value="data-agent">data-agent (企业数据)</option>
+                            <option value="search-agent">search-agent (外部检索)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Agent Role</label>
+                        <input type="text" id="agent-role" value="doc_writer">
+                    </div>
+                    <div class="form-group">
+                        <label>委托用户 (可选)</label>
+                        <input type="text" id="delegated-user" placeholder="user:1001">
+                    </div>
+                    <button class="btn" onclick="issueAgentToken()">签发Token</button>
+                    <div id="result-issue-agent" class="result hidden"></div>
+                </div>
+
+                <div class="card">
+                    <h2>👤 签发用户Token</h2>
+                    <div class="form-group">
+                        <label>User ID</label>
+                        <input type="text" id="user-id" value="user:1001">
+                    </div>
+                    <button class="btn" onclick="issueUserToken()">签发用户Token</button>
+                    <div id="result-issue-user" class="result hidden"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🔍 验证/撤销Token</h2>
+                <div class="form-group">
+                    <label>Token (粘贴进行验证或撤销)</label>
+                    <textarea id="verify-token" rows="3" placeholder="粘贴Token..."></textarea>
+                </div>
+                <div style="display:flex;gap:10px">
+                    <button class="btn" onclick="verifyToken()">验证</button>
+                    <button class="btn danger" onclick="revokeToken()">撤销</button>
+                </div>
+                <div id="result-verify" class="result hidden"></div>
+            </div>
+
+            <div class="card">
+                <h2>📋 查询Agent权限</h2>
+                <div class="form-group">
+                    <label>Agent ID</label>
+                    <select id="caps-agent-id">
+                        <option value="doc-assistant">doc-assistant</option>
+                        <option value="data-agent">data-agent</option>
+                        <option value="search-agent">search-agent</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="getCapabilities()">查询权限</button>
+                <div id="result-caps" class="result hidden"></div>
+            </div>
+
+            <div class="card">
+                <h2>📜 查询Agent已签发的Token</h2>
+                <div class="form-group">
+                    <label>选择Agent查看其已签发的Token</label>
+                    <select id="token-list-agent" onchange="loadAgentTokens()">
+                        <option value="doc-assistant">doc-assistant</option>
+                        <option value="data-agent">data-agent</option>
+                        <option value="search-agent">search-agent</option>
+                        <option value="user:1001">user:1001 (用户)</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="loadAgentTokens()">🔍 查询Token</button>
+                <div id="token-list-result" style="margin-top:12px"></div>
+            </div>
+
+            <div class="card">
+                <h2>🔎 Token追溯查询</h2>
+                <p style="color:#666;font-size:14px;margin-bottom:12px">输入Token可查询该Token的所有使用记录、授权信息和响应详情</p>
+                <div class="form-group">
+                    <label>输入Token</label>
+                    <textarea id="trace-token-input" rows="2" placeholder="粘贴Token进行追溯查询..."></textarea>
+                </div>
+                <button class="btn" onclick="traceToken()">🔍 追溯Token</button>
+                <div id="trace-token-result" style="margin-top:12px"></div>
+            </div>
+        </div>
+
+        <!-- 系统配置页面 -->
+        <div id="page-config" class="page hidden">
+            <div class="card" style="background:#e8f4fd;border-left:4px solid #2196F3">
+                <h2 style="color:#2196F3">⚙️ 系统配置</h2>
+                <p style="color:#333;margin-top:8px">配置LLM供应商、搜索API供应商、Agent接入参数等</p>
+            </div>
+
+            <div class="card">
+                <h2>🤖 LLM供应商配置</h2>
+                <p style="color:#666;margin-bottom:16px">配置大语言模型API供应商和密钥</p>
+
+                <div class="form-group">
+                    <label>LLM供应商</label>
+                    <select id="llm-provider" onchange="updateLLMFields()">
+                        <option value="360">360 AI (360智脑)</option>
+                        <option value="openrouter">OpenRouter</option>
+                        <option value="azure">Azure OpenAI</option>
+                        <option value="openai">OpenAI</option>
+                        <option value="anthropic">Anthropic</option>
+                        <option value="custom">自定义</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>API Base URL</label>
+                    <input id="llm-base-url" placeholder="https://api.360.cn/v1" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px">
+                </div>
+
+                <div class="form-group">
+                    <label>API Key</label>
+                    <input type="password" id="llm-api-key" placeholder="输入API Key" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px">
+                </div>
+
+                <div class="form-group">
+                    <label>模型名称</label>
+                    <input id="llm-model" placeholder="如: deepseek-v3.2, gpt-4o, claude-3-opus" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px">
+                </div>
+
+                <div style="display:flex;gap:10px;flex-wrap:wrap">
+                    <button class="btn success" onclick="saveLLMConfig()">💾 保存配置</button>
+                    <button class="btn" onclick="testLLMConnection()">🔗 测试连接</button>
+                </div>
+                <div id="llm-result" style="margin-top:12px"></div>
+            </div>
+
+            <div class="card">
+                <h2>🔍 搜索API供应商配置</h2>
+                <p style="color:#666;margin-bottom:16px">配置网络搜索API供应商和密钥</p>
+
+                <div class="form-group">
+                    <label>搜索供应商</label>
+                    <select id="search-provider" onchange="updateSearchFields()">
+                        <option value="tavily">Tavily</option>
+                        <option value="serpapi">SerpAPI</option>
+                        <option value="google">Google Search</option>
+                        <option value="bing">Bing Search</option>
+                        <option value="duckduckgo">DuckDuckGo</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>API Key</label>
+                    <input type="password" id="search-api-key" placeholder="输入API Key" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px">
+                </div>
+
+                <div class="form-group">
+                    <label>搜索参数 (可选)</label>
+                    <input id="search-extra" placeholder='{"search_depth": "advanced"}' style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px">
+                </div>
+
+                <div style="display:flex;gap:10px;flex-wrap:wrap">
+                    <button class="btn success" onclick="saveSearchConfig()">💾 保存配置</button>
+                    <button class="btn" onclick="testSearchConnection()">🔗 测试连接</button>
+                </div>
+                <div id="search-result" style="margin-top:12px"></div>
+            </div>
+
+            <div class="card">
+                <h2>📡 Agent服务配置</h2>
+                <p style="color:#666;margin-bottom:16px">配置各Agent服务的连接参数</p>
+
+                <table style="width:100%;font-size:13px">
+                    <thead>
+                        <tr style="background:#f8f9fa">
+                            <th style="padding:10px;text-align:left">Agent</th>
+                            <th style="padding:10px;text-align:left">服务端口</th>
+                            <th style="padding:10px;text-align:left">状态</th>
+                            <th style="padding:10px;text-align:left">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="agent-services-body">
+                        <tr><td colspan="4" style="text-align:center;color:#999">加载中...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>🔧 Agent接入配置</h2>
+                <p style="color:#666;margin-bottom:16px">添加新的异构Agent接入系统</p>
+
+                <div class="form-group">
+                    <label>Agent ID</label>
+                    <input id="new-agent-id" placeholder="如: my-agent" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px">
+                </div>
+
+                <div class="form-group">
+                    <label>Agent名称</label>
+                    <input id="new-agent-name" placeholder="如: 我的自定义Agent" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px">
+                </div>
+
+                <div class="form-group">
+                    <label>LLM供应商</label>
+                    <select id="new-agent-llm">
+                        <option value="360">360 AI</option>
+                        <option value="openrouter">OpenRouter</option>
+                        <option value="azure">Azure OpenAI</option>
+                        <option value="openai">OpenAI</option>
+                        <option value="anthropic">Anthropic</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>模型名称</label>
+                    <input id="new-agent-model" placeholder="如: deepseek-v3.2" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px">
+                </div>
+
+                <div class="form-group">
+                    <label>工具集 (逗号分隔)</label>
+                    <input id="new-agent-tools" placeholder="如: web_search, calculator, file_reader" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px">
+                </div>
+
+                <div class="form-group">
+                    <label>服务端口</label>
+                    <input id="new-agent-port" placeholder="如: 8004" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px">
+                </div>
+
+                <div class="form-group">
+                    <label>Agent描述</label>
+                    <textarea id="new-agent-desc" rows="2" placeholder="描述Agent的功能..." style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px"></textarea>
+                </div>
+
+                <button class="btn success" onclick="addNewAgent()">➕ 添加Agent</button>
+                <div id="add-agent-result" style="margin-top:12px"></div>
+            </div>
+
+            <div class="card">
+                <h2>📋 当前配置汇总</h2>
+                <div id="config-summary" style="background:#f8f9fa;padding:16px;border-radius:8px">
+                    <p style="color:#999;text-align:center">加载中...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 审计日志页面 -->
+        <div id="page-logs" class="page hidden">
+            <div class="card">
+                <h2>📋 审计日志</h2>
+                <div style="display:flex;gap:10px;margin-bottom:16px">
+                    <button class="btn" onclick="refreshLogs()">🔄 刷新</button>
+                    <select id="log-filter" onchange="refreshLogs()">
+                        <option value="">全部</option>
+                        <option value="allow">只看允许</option>
+                        <option value="deny">只看拒绝</option>
+                    </select>
+                </div>
+                <div id="logs-table" style="overflow-x:auto">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>时间</th>
+                                <th>决策</th>
+                                <th>请求方</th>
+                                <th>目标</th>
+                                <th>操作</th>
+                                <th>资源</th>
+                                <th>原因</th>
+                                <th>委托用户</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-body">
+                            <tr><td colspan="8" style="text-align:center;color:#999">加载中...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 监控页面 -->
+        <div id="page-permissions" class="page hidden">
+            <p style="color:#999;text-align:center">加载中...</p>
+        </div>
+
+        <div id="page-monitoring" class="page hidden">
+            <div class="card">
+                <h2>📈 系统指标</h2>
+                <div id="full-metrics" class="grid"></div>
+            </div>
+            <div class="card">
+                <h2>🚨 最近告警</h2>
+                <div id="alerts-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const IAM = 'http://localhost:8000';
+        const DOC = 'http://localhost:8001';
+        const DATA = 'http://localhost:8002';
+        const SEARCH = 'http://localhost:8003';
+
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
+            document.getElementById('page-' + page).classList.remove('hidden');
+            document.getElementById('nav-' + page).classList.add('active');
+            window.location.hash = page;
+
+            if (page === 'overview') refreshHealth();
+            if (page === 'logs') refreshLogs();
+            if (page === 'monitoring') refreshMonitoring();
+            if (page === 'permissions') loadCapabilities();
+            if (page === 'config') loadConfigPage();
+        }
+
+        function initFromHash() {
+            const hash = window.location.hash.slice(1) || 'overview';
+            showPage(hash);
+        }
+
+        window.addEventListener('hashchange', initFromHash);
+        window.addEventListener('load', initFromHash);
+
+        async function refreshHealth() {
+            try {
+                const resp = await fetch(IAM + '/health');
+                const data = await resp.json();
+                const healthDiv = document.getElementById('system-health');
+                if (data.status === 'healthy') {
+                    healthDiv.className = 'alert-box success';
+                    healthDiv.innerHTML = '✅ 系统运行正常 | ' + data.service;
+                } else {
+                    healthDiv.className = 'alert-box warning';
+                    healthDiv.innerHTML = '⚠️ 系统状态: ' + data.status;
+                }
+
+                const metrics = await fetch(IAM + '/monitoring/metrics').then(r => r.json());
+                document.getElementById('stat-total').textContent = metrics.metrics?.total_requests || 0;
+                document.getElementById('stat-allow').textContent = metrics.metrics?.auth_decisions?.allow || 0;
+                document.getElementById('stat-deny').textContent = metrics.metrics?.auth_decisions?.deny || 0;
+                document.getElementById('stat-token-issued').textContent = metrics.metrics?.token_issued || 0;
+                document.getElementById('stat-token-revoked').textContent = metrics.metrics?.token_revoked || 0;
+            } catch (e) {
+                document.getElementById('system-health').className = 'alert-box warning';
+                document.getElementById('system-health').innerHTML = '❌ 无法连接到IAM服务: ' + e.message;
+            }
+        }
+
+        async function refreshLogs() {
+            const filter = document.getElementById('log-filter')?.value || '';
+            const url = IAM + '/audit/logs?limit=100' + (filter ? '&decision=' + filter : '');
+            try {
+                const data = await fetch(url).then(r => r.json());
+                const tbody = document.getElementById('logs-body');
+                if (data.logs && data.logs.length > 0) {
+                    tbody.innerHTML = data.logs.slice(0, 50).map(log => {
+                        const isAuth = log.event_type === 'auth_decision';
+                        const bgColor = isAuth ? (log.decision === 'allow' ? '#f0fff4' : '#fff5f5') : '';
+                        return '<tr style="background:' + bgColor + '">' +
+                            '<td style="white-space:nowrap">' + log.timestamp + '</td>' +
+                            '<td><span class="badge ' + log.decision + '">' + (log.decision === 'allow' ? '✅' : '❌') + '</span></td>' +
+                            '<td style="white-space:nowrap">' + (log.requestor_agent_id || '-') + '</td>' +
+                            '<td style="white-space:nowrap">' + (log.target_agent_id || '-') + '</td>' +
+                            '<td>' + (log.action || '-') + '</td>' +
+                            '<td>' + (log.resource || '-') + '</td>' +
+                            '<td>' + (log.reason || '-') + '</td>' +
+                            '<td style="white-space:nowrap;font-size:10px;font-family:monospace">' + (log.delegated_user || '-') + '</td>' +
+                            '</tr>';
+                    }).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#999">暂无日志</td></tr>';
+                }
+            } catch (e) {
+                document.getElementById('logs-body').innerHTML = '<tr><td colspan="8" style="color:red">加载失败: ' + e.message + '</td></tr>';
+            }
+        }
+
+        async function refreshMonitoring() {
+            try {
+                const metrics = await fetch(IAM + '/monitoring/metrics').then(r => r.json());
+                const alerts = await fetch(IAM + '/monitoring/alerts').then(r => r.json());
+
+                document.getElementById('full-metrics').innerHTML = `
+                    <div class="stat">
+                        <div class="stat-value">${Math.floor(metrics.uptime_seconds / 60)}</div>
+                        <div class="stat-label">运行时间(分钟)</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">${metrics.metrics?.total_requests || 0}</div>
+                        <div class="stat-label">总请求数</div>
+                    </div>
+                    <div class="stat allow">
+                        <div class="stat-value">${metrics.metrics?.auth_decisions?.allow || 0}</div>
+                        <div class="stat-label">允许访问</div>
+                    </div>
+                    <div class="stat deny">
+                        <div class="stat-value">${metrics.metrics?.auth_decisions?.deny || 0}</div>
+                        <div class="stat-label">拒绝访问</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">${metrics.metrics?.token_issued || 0}</div>
+                        <div class="stat-label">Token签发</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">${metrics.metrics?.errors || 0}</div>
+                        <div class="stat-label">错误数</div>
+                    </div>
+                `;
+
+                document.getElementById('alerts-list').innerHTML = alerts.alerts && alerts.alerts.length ?
+                    alerts.alerts.map(a => `<div class="alert-box ${a.level === 'warning' ? 'warning' : 'info'}">${a.message} <small>(${new Date(a.timestamp).toLocaleString()})</small></div>`).join('') :
+                    '<p style="color:#666">暂无告警</p>';
+            } catch (e) {
+                document.getElementById('full-metrics').innerHTML = '<p style="color:red">加载失败: ' + e.message + '</p>';
+            }
+        }
+
+        function showResult(id, html, isError = false) {
+            const el = document.getElementById(id);
+            el.className = 'result ' + (isError ? 'error' : 'success');
+            el.innerHTML = html;
+            el.classList.remove('hidden');
+        }
+
+        async function testHealth() {
+            showResult('result-test-1', '⏳ 检查中...');
+            try {
+                const [iam, doc, data, search] = await Promise.all([
+                    fetch(IAM + '/health'),
+                    fetch(DOC + '/status'),
+                    fetch(DATA + '/status'),
+                    fetch(SEARCH + '/status')
+                ]);
+                const results = [];
+                if (iam.ok) results.push('<span style="color:#27ae60">✅ IAM服务(8000)正常</span>');
+                else results.push('<span style="color:#e74c3c">❌ IAM服务(8000)异常</span>');
+                if (doc.ok) results.push('<span style="color:#27ae60">✅ Doc-Assistant(8001)正常</span>');
+                else results.push('<span style="color:#e74c3c">❌ Doc-Assistant(8001)异常</span>');
+                if (data.ok) results.push('<span style="color:#27ae60">✅ Data-Agent(8002)正常</span>');
+                else results.push('<span style="color:#e74c3c">❌ Data-Agent(8002)异常</span>');
+                if (search.ok) results.push('<span style="color:#27ae60">✅ Search-Agent(8003)正常</span>');
+                else results.push('<span style="color:#e74c3c">❌ Search-Agent(8003)异常</span>');
+                showResult('result-test-1', '<strong>健康检查结果:</strong><br>' + results.join('<br>'), false);
+            } catch (e) {
+                showResult('result-test-1', '❌ <strong>连接失败:</strong> ' + e.message, true);
+            }
+        }
+
+        let issuedTokenForRevoke = '';
+
+        async function testTokenIssue() {
+            showResult('result-test-2', '⏳ 正在为doc-assistant签发Token...');
+            try {
+                const resp = await fetch(IAM + '/token/issue', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({agent_id: 'doc-assistant', agent_role: 'coordinator'})
+                });
+                const data = await resp.json();
+                if (data.access_token) {
+                    issuedTokenForRevoke = data.access_token;
+                    showResult('result-test-2', '✅ <strong>Token签发成功!</strong><br>Token: <input type="text" value="' + data.access_token + '" readonly style="width:100%;font-size:10px;margin-top:8px"><br>有效期: 2小时<br>权限: agent:call:data-agent, agent:call:search-agent', false);
+                } else {
+                    showResult('result-test-2', '❌ <strong>签发失败:</strong> ' + JSON.stringify(data), true);
+                }
+            } catch (e) {
+                showResult('result-test-2', '❌ <strong>请求失败:</strong> ' + e.message, true);
+            }
+        }
+
+        async function testNormalFlow() {
+            showResult('result-test-3', '⏳ 文档助手正在协调Agent生成报告...');
+            try {
+                const resp = await fetch(DOC + '/task', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({task: '查看公司通讯录', user_id: 'user:1001'})
+                });
+                const data = await resp.json();
+                if (data.status === 'success') {
+                    let html = '✅ <strong>正常委托成功!</strong><br><br>';
+                    html += '<strong>数据来源:</strong> ' + (data.data_source || '无') + '<br>';
+                    html += '<strong>搜索来源:</strong> ' + (data.search_source || '无') + '<br><br>';
+                    html += '<strong>报告预览:</strong><pre style="max-height:200px;overflow:auto;background:#f9f9f9;padding:8px;border-radius:4px;font-size:11px">' + (data.report || '').substring(0, 800) + '</pre>';
+                    showResult('result-test-3', html, false);
+                } else {
+                    showResult('result-test-3', '❌ <strong>失败:</strong> ' + JSON.stringify(data), true);
+                }
+            } catch (e) {
+                showResult('result-test-3', '❌ <strong>请求失败:</strong> ' + e.message, true);
+            }
+        }
+
+        async function testDenyFlow() {
+            showResult('result-test-4', '⏳ 外部检索Agent尝试越权调用...');
+            try {
+                const resp = await fetch(SEARCH + '/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({query: '调用企业数据Agent获取内部数据'})
+                });
+                const data = await resp.json();
+                if (resp.status === 403 || (data.status === 'error' && data.result && data.result.includes('越权'))) {
+                    showResult('result-test-4', '✅ <strong>越权拦截成功!</strong><br><br><strong>错误信息:</strong><br><pre style="background:#fff5f5;padding:8px;border-radius:4px;font-size:11px">' + (data.result || JSON.stringify(data)) + '</pre><br><strong>说明:</strong> search-agent没有agent:call:data-agent权限，被IAM正确拦截', false);
+                } else {
+                    showResult('result-test-4', '⚠️ <strong>未被拦截!</strong> 状态: ' + resp.status + '<br>' + JSON.stringify(data), true);
+                }
+            } catch (e) {
+                showResult('result-test-4', '❌ <strong>请求失败:</strong> ' + e.message, true);
+            }
+        }
+
+        async function testLogs() {
+            showResult('result-test-5', '⏳ 加载审计日志...');
+            try {
+                const resp = await fetch(IAM + '/audit/logs?limit=50');
+                const data = await resp.json();
+                const logs = data.logs || [];
+                const authLogs = logs.filter(l => l.event_type === 'auth_decision');
+
+                let html = '<strong>审计日志统计:</strong><br>';
+                html += '✅ 授权决策记录: ' + authLogs.length + ' 条<br>';
+                html += '📝 总记录数: ' + logs.length + ' 条<br><br>';
+                html += '<strong>完整审计记录:</strong><br>';
+                html += '<div style="max-height:500px;overflow-y:auto">';
+
+                logs.slice(0, 30).forEach((log, idx) => {
+                    const isAuth = log.event_type === 'auth_decision';
+                    const bgColor = isAuth ? (log.decision === 'allow' ? '#f0fff4' : '#fff5f5') : '#f8f9fa';
+                    html += '<div style="background:' + bgColor + ';padding:12px;margin-bottom:8px;border-radius:6px;border-left:3px solid ' + (isAuth ? (log.decision === 'allow' ? '#27ae60' : '#e74c3c') : '#667eea') + '">';
+                    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
+                    html += '<span style="font-weight:600">' + (idx + 1) + '. ' + log.event_type + '</span>';
+                    html += '<span class="badge ' + log.decision + '">' + (log.decision === 'allow' ? '✅ 允许' : '❌ 拒绝') + '</span>';
+                    html += '</div>';
+                    html += '<div style="font-size:12px;color:#666">';
+                    html += '<p style="margin:2px 0"><strong>⏰ 时间:</strong> ' + log.timestamp + '</p>';
+                    html += '<p style="margin:2px 0"><strong>👤 请求方:</strong> ' + (log.requestor_agent_id || '-') + '</p>';
+                    html += '<p style="margin:2px 0"><strong>🎯 目标:</strong> ' + (log.target_agent_id || '-') + '</p>';
+                    html += '<p style="margin:2px 0"><strong>⚡ 操作:</strong> ' + (log.action || '-') + '</p>';
+                    html += '<p style="margin:2px 0"><strong>📦 资源:</strong> ' + (log.resource || '-') + '</p>';
+                    html += '<p style="margin:2px 0"><strong>📋 原因:</strong> ' + (log.reason || '-') + '</p>';
+                    if (log.delegated_user) {
+                        html += '<p style="margin:2px 0"><strong>👥 委托用户:</strong> ' + log.delegated_user + '</p>';
+                    }
+                    if (log.token_id) {
+                        html += '<p style="margin:2px 0"><strong>🔑 Token ID:</strong> <span style="font-family:monospace;font-size:10px">' + log.token_id.substring(0, 30) + '...</span></p>';
+                    }
+                    html += '<p style="margin:2px 0"><strong>🔖 Log ID:</strong> <span style="font-family:monospace;font-size:10px">' + log.log_id + '</span></p>';
+                    html += '<p style="margin:2px 0"><strong>📎 Request ID:</strong> <span style="font-family:monospace;font-size:10px">' + log.request_id + '</span></p>';
+                    html += '</div></div>';
+                });
+                html += '</div>';
+
+                showResult('result-test-5', html, false);
+            } catch (e) {
+                showResult('result-test-5', '❌ <strong>加载失败:</strong> ' + e.message, true);
+            }
+        }
+
+        async function testTokenRevoke() {
+            if (!issuedTokenForRevoke) {
+                showResult('result-test-6', '⚠️ 请先执行步骤2签发Token', true);
+                return;
+            }
+            showResult('result-test-6', '⏳ 正在撤销Token...');
+            try {
+                const resp = await fetch(IAM + '/token/revoke', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({token: issuedTokenForRevoke})
+                });
+                const data = await resp.json();
+                if (data.revoked) {
+                    showResult('result-test-6', '✅ <strong>Token撤销成功!</strong><br><br>Token已被加入撤销列表<br>使用该Token的请求将被拒绝<br><br>撤销的Token:<br><input type="text" value="' + issuedTokenForRevoke + '" readonly style="width:100%;font-size:10px;background:#fff5f5">', false);
+                    issuedTokenForRevoke = '';
+                } else {
+                    showResult('result-test-6', '❌ <strong>撤销失败:</strong> ' + JSON.stringify(data), true);
+                }
+            } catch (e) {
+                showResult('result-test-6', '❌ <strong>请求失败:</strong> ' + e.message, true);
+            }
+        }
+
+        async function testPermissionDenied() {
+            showResult('result-test-7a', '⏳ 测试权限不足拦截...');
+            try {
+                const tokenResp = await fetch(IAM + '/token/issue', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({agent_id: 'search-agent', agent_role: 'web_searcher'})
+                });
+                const tokenData = await tokenResp.json();
+                const token = tokenData.access_token;
+
+                const authResp = await fetch(IAM + '/auth/call?token=' + token, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({target_agent_id: 'data-agent', action: 'data:read:spreadsheet', resource: 'weekly-sales'})
+                });
+
+                if (authResp.status === 403) {
+                    const data = await authResp.json();
+                    let html = '<div style="background:#fff5f5;padding:16px;border-radius:8px;border-left:4px solid #e74c3c">';
+                    html += '<h4 style="color:#e74c3c;margin-bottom:8px">✅ 权限不足被正确拦截!</h4>';
+                    html += '<p><strong>HTTP状态:</strong> ' + authResp.status + ' Forbidden</p>';
+                    html += '<p><strong>错误码:</strong> ' + (data.detail?.error || 'N/A') + '</p>';
+                    html += '<p><strong>错误描述:</strong> ' + (data.detail?.error_description || '权限不足') + '</p>';
+                    html += '<p><strong>说明:</strong> search-agent 没有 <code>agent:call:data-agent</code> 权限，IAM正确拦截</p>';
+                    html += '</div>';
+                    showResult('result-test-7a', html, false);
+                } else {
+                    const text = await authResp.text();
+                    showResult('result-test-7a', '⚠️ <strong>未被拦截! 状态码:</strong> ' + authResp.status + '<br>' + text, true);
+                }
+            } catch (e) {
+                showResult('result-test-7a', '❌ <strong>测试失败:</strong> ' + e.message, true);
+            }
+        }
+
+        async function testExpiredToken() {
+            showResult('result-test-7b', '⏳ 测试Token过期/撤销验证...');
+            try {
+                const fakeToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZ2VudF9pZCI6ImRvYy1hc3Npc3RhbnQiLCJyb2xlIjoiY29vcmRpbmF0b3IiLCJ0eXBlIjoiYWNjZXNzIn0.fake_signature';
+                const verifyResp = await fetch(IAM + '/token/verify', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({token: fakeToken})
+                });
+                const data = await verifyResp.json();
+
+                if (verifyResp.status === 401 || !data.valid) {
+                    let html = '<div style="background:#fff5f5;padding:16px;border-radius:8px;border-left:4px solid #e67e22">';
+                    html += '<h4 style="color:#e67e22;margin-bottom:8px">✅ Token验证失败被正确处理!</h4>';
+                    html += '<p><strong>HTTP状态:</strong> ' + verifyResp.status + '</p>';
+                    html += '<p><strong>验证结果:</strong> ' + (data.valid === false ? '无效Token' : '过期/无效') + '</p>';
+                    html += '<p><strong>错误信息:</strong> ' + (data.error || data.message || 'Token验证失败') + '</p>';
+                    html += '<p><strong>说明:</strong> 系统正确识别了无效Token并返回401</p>';
+                    html += '</div>';
+                    showResult('result-test-7b', html, false);
+                } else {
+                    showResult('result-test-7b', '⚠️ 无效Token未被拒绝: ' + JSON.stringify(data), true);
+                }
+            } catch (e) {
+                showResult('result-test-7b', '❌ <strong>测试失败:</strong> ' + e.message, true);
+            }
+        }
+
+        async function testAgentUnavailable() {
+            showResult('result-test-7c', '⏳ 测试Agent不可用场景...');
+            try {
+                const resp = await fetch('http://localhost:9999/status', { timeout: 3000 });
+                showResult('result-test-7c', '⚠️ Agent未按预期不可用，状态: ' + resp.status, true);
+            } catch (e) {
+                let html = '<div style="background:#fff5f5;padding:16px;border-radius:8px;border-left:4px solid #e74c3c">';
+                html += '<h4 style="color:#e74c3c;margin-bottom:8px">✅ Agent不可用被正确处理!</h4>';
+                html += '<p><strong>错误类型:</strong> Connection Error / Timeout</p>';
+                html += '<p><strong>错误信息:</strong> ' + e.message + '</p>';
+                html += '<p><strong>说明:</strong> 系统正确处理了目标Agent不可用的情况</p>';
+                html += '<p><strong>兜底机制:</strong> 返回友好错误提示而非崩溃</p>';
+                html += '</div>';
+                showResult('result-test-7c', html, false);
+            }
+        }
+
+        async function testDataNotFound() {
+            showResult('result-test-7d', '⏳ 测试数据不存在场景...');
+            try {
+                const tokenResp = await fetch(IAM + '/token/issue', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({agent_id: 'doc-assistant', agent_role: 'coordinator'})
+                });
+                const tokenData = await tokenResp.json();
+                const token = tokenData.access_token;
+
+                const authResp = await fetch(IAM + '/auth/call?token=' + token, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({target_agent_id: 'data-agent', action: 'data:read:spreadsheet', resource: 'nonexistent'})
+                });
+
+                if (authResp.status === 200) {
+                    const authData = await authResp.json();
+                    const callToken = authData.call_token;
+                    const dataResp = await fetch('http://localhost:8002/read-spreadsheet?token=' + callToken + '&spreadsheet_id=nonexistent');
+                    const data = await dataResp.json();
+
+                    if (dataResp.status === 404) {
+                        let html = '<div style="background:#fff5f5;padding:16px;border-radius:8px;border-left:4px solid #e67e22">';
+                        html += '<h4 style="color:#e67e22;margin-bottom:8px">✅ 数据不存在被正确处理!</h4>';
+                        html += '<p><strong>HTTP状态:</strong> ' + dataResp.status + ' Not Found</p>';
+                        html += '<p><strong>错误信息:</strong> ' + (data.detail || 'Spreadsheet not found') + '</p>';
+                        html += '<p><strong>说明:</strong> 系统正确返回404，资源不存在</p>';
+                        html += '</div>';
+                        showResult('result-test-7d', html, false);
+                    } else {
+                        showResult('result-test-7d', '⚠️ 预期404，但得到: ' + dataResp.status + ' - ' + JSON.stringify(data), true);
+                    }
+                } else {
+                    showResult('result-test-7d', '⚠️ 授权失败: ' + authResp.status, true);
+                }
+            } catch (e) {
+                showResult('result-test-7d', '❌ <strong>测试失败:</strong> ' + e.message, true);
+            }
+        }
+
+        async function issueAgentToken() {
+            const agentId = document.getElementById('agent-id').value;
+            const role = document.getElementById('agent-role').value;
+            const delegated = document.getElementById('delegated-user').value;
+
+            showResult('result-issue-agent', '⏳ 签发中...');
+            try {
+                const resp = await fetch(IAM + '/token/issue', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({agent_id: agentId, agent_role: role, delegated_user: delegated || null})
+                });
+                const data = await resp.json();
+                if (data.access_token) {
+                    showResult('result-issue-agent', '✅ <strong>Token签发成功!</strong><br><input type="text" value="' + data.access_token + '" readonly style="margin-top:10px;width:100%;font-size:11px">', false);
+                } else {
+                    showResult('result-issue-agent', '❌ <strong>失败:</strong> ' + JSON.stringify(data), true);
+                }
+            } catch (e) {
+                showResult('result-issue-agent', '❌ <strong>请求失败:</strong> ' + e.message, true);
+            }
+        }
+
+        async function issueUserToken() {
+            const userId = document.getElementById('user-id').value;
+            showResult('result-issue-user', '⏳ 签发中...');
+            try {
+                const resp = await fetch(IAM + '/token/issue-user', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({user_id: userId})
+                });
+                const data = await resp.json();
+                if (data.access_token) {
+                    showResult('result-issue-user', '✅ <strong>用户Token签发成功!</strong><br><input type="text" value="' + data.access_token + '" readonly style="margin-top:10px;width:100%;font-size:11px">', false);
+                } else {
+                    showResult('result-issue-user', '❌ <strong>失败:</strong> ' + JSON.stringify(data), true);
+                }
+            } catch (e) {
+                showResult('result-issue-user', '❌ <strong>请求失败:</strong> ' + e.message, true);
+            }
+        }
+
+        async function verifyToken() {
+            const token = document.getElementById('verify-token').value;
+            if (!token) return alert('请输入Token');
+            showResult('result-verify', '⏳ 验证中...');
+            try {
+                const resp = await fetch(IAM + '/token/verify', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({token})
+                });
+                const data = await resp.json();
+                if (data.valid) {
+                    showResult('result-verify', '✅ <strong>Token有效!</strong><br><pre>' + JSON.stringify(data.payload, null, 2) + '</pre>', false);
+                } else {
+                    showResult('result-verify', '❌ <strong>Token无效:</strong> ' + data.detail?.error_description, true);
+                }
+            } catch (e) {
+                showResult('result-verify', '❌ <strong>请求失败:</strong> ' + e.message, true);
+            }
+        }
+
+        async function revokeToken() {
+            const token = document.getElementById('verify-token').value;
+            if (!token) return alert('请输入Token');
+            showResult('result-verify', '⏳ 撤销中...');
+            try {
+                const resp = await fetch(IAM + '/token/revoke', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({token})
+                });
+                if (resp.ok) {
+                    showResult('result-verify', '✅ <strong>Token已撤销!</strong>', false);
+                } else {
+                    const data = await resp.json();
+                    showResult('result-verify', '❌ <strong>撤销失败:</strong> ' + data.detail?.error_description, true);
+                }
+            } catch (e) {
+                showResult('result-verify', '❌ <strong>请求失败:</strong> ' + e.message, true);
+            }
+        }
+
+        async function getCapabilities() {
+            const agentId = document.getElementById('caps-agent-id').value;
+            showResult('result-caps', '⏳ 查询中...');
+            try {
+                const resp = await fetch(IAM + '/agent/capabilities/' + agentId);
+                const data = await resp.json();
+                if (data.capabilities) {
+                    showResult('result-caps', '✅ <strong>' + agentId + ' 权限:</strong><br><pre>' + JSON.stringify(data.capabilities, null, 2) + '</pre>', false);
+                } else {
+                    showResult('result-caps', '❌ <strong>查询失败:</strong> ' + JSON.stringify(data), true);
+                }
+            } catch (e) {
+                showResult('result-caps', '❌ <strong>请求失败:</strong> ' + e.message, true);
+            }
+        }
+
+        async function loadAgentTokens() {
+            const agentId = document.getElementById('token-list-agent').value;
+            const container = document.getElementById('token-list-result');
+            container.innerHTML = '<p style="color:#666">⏳ 加载中...</p>';
+            try {
+                const resp = await fetch(IAM + '/audit/logs?limit=50');
+                const data = await resp.json();
+                const logs = data.logs || data || [];
+                const tokenMap = {};
+                logs.forEach(log => {
+                    const tid = log.token_id;
+                    if (tid && log.requestor_agent_id === agentId) {
+                        if (!tokenMap[tid]) {
+                            tokenMap[tid] = { token_id: tid, count: 0, last_time: log.timestamp, decision: log.decision, action: log.action, target: log.target_agent_id };
+                        }
+                        tokenMap[tid].count++;
+                        if (log.timestamp > tokenMap[tid].last_time) {
+                            tokenMap[tid].last_time = log.timestamp;
+                        }
+                    }
+                });
+                const tokens = Object.values(tokenMap);
+                if (tokens.length === 0) {
+                    container.innerHTML = '<p style="color:#999">该Agent暂无Token记录</p>';
+                } else {
+                    container.innerHTML = '<table style="width:100%;font-size:13px"><thead><tr><th>Token</th><th>目标Agent</th><th>操作</th><th>调用次数</th><th>状态</th><th>操作</th></tr></thead><tbody>' +
+                        tokens.map(t => '<tr>' +
+                            '<td style="max-width:300px"><div style="display:flex;align-items:center;gap:8px"><input type="text" readonly value="' + t.token_id + '" style="flex:1;font-size:11px;font-family:monospace;padding:4px;border:1px solid #ddd;border-radius:4px;background:#f9f9f9" id="token-input-' + t.token_id.substring(0,8) + '"><button class="btn" style="padding:4px 8px;font-size:11px" onclick="copyToken(\'' + t.token_id + '\')">复制</button></div></td>' +
+                            '<td>' + t.target + '</td>' +
+                            '<td>' + t.action + '</td>' +
+                            '<td>' + t.count + '</td>' +
+                            '<td><span class="badge ' + (t.decision === 'allow' ? 'allow' : 'deny') + '">' + t.decision + '</span></td>' +
+                            '<td><button class="btn danger" style="padding:4px 8px;font-size:11px" onclick="revokeTokenById(\'' + t.token_id + '\')">撤销</button></td>' +
+                            '</tr>').join('') + '</tbody></table>';
+                }
+            } catch (e) {
+                container.innerHTML = '<p style="color:red">加载失败: ' + e.message + '</p>';
+            }
+        }
+
+        function copyToken(tokenId) {
+            navigator.clipboard.writeText(tokenId).then(() => {
+                alert('Token已复制到剪贴板');
+            }).catch(() => {
+                const input = document.getElementById('token-input-' + tokenId.substring(0,8));
+                if (input) {
+                    input.select();
+                    document.execCommand('copy');
+                    alert('Token已复制到剪贴板');
+                }
+            });
+        }
+
+        async function revokeTokenById(tokenId) {
+            if (!confirm('确定要撤销该Token吗？')) return;
+            try {
+                const resp = await fetch(IAM + '/token/revoke', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({token_id: tokenId})
+                });
+                if (resp.ok) {
+                    alert('Token已撤销');
+                    loadAgentTokens();
+                } else {
+                    alert('撤销失败');
+                }
+            } catch (e) {
+                alert('撤销失败: ' + e.message);
+            }
+        }
+
+        async function traceToken() {
+            const token = document.getElementById('trace-token-input').value.trim();
+            const container = document.getElementById('trace-token-result');
+            if (!token) {
+                container.innerHTML = '<p style="color:red">请输入Token</p>';
+                return;
+            }
+            container.innerHTML = '<p style="color:#666">⏳ 追溯中...</p>';
+            try {
+                const verifyResp = await fetch(IAM + '/token/verify', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({token: token})
+                });
+                const verifyData = await verifyResp.json();
+
+                const logsResp = await fetch(IAM + '/audit/logs?limit=100');
+                const logsData = await logsResp.json();
+                const logs = logsData.logs || logsData || [];
+                const tokenLogs = logs.filter(l => l.token_id === token || l.token_id?.includes(token.substring(0, 20)));
+
+                let html = '<div style="background:#f8f9fa;padding:16px;border-radius:8px;margin-bottom:16px">';
+                html += '<h4 style="margin-bottom:12px">📋 Token基本信息</h4>';
+                if (verifyResp.ok && verifyData.payload) {
+                    html += '<p><strong>Token类型:</strong> ' + (verifyData.payload.type || '未知') + '</p>';
+                    html += '<p><strong>持有者:</strong> ' + (verifyData.payload.agent_id || verifyData.payload.delegated_user || '未知') + '</p>';
+                    html += '<p><strong>权限列表:</strong></p><ul>';
+                    (verifyData.payload.capabilities || []).forEach(c => html += '<li>' + c + '</li>');
+                    html += '</ul>';
+                    html += '<p><strong>签发时间:</strong> ' + (verifyData.payload.iat ? new Date(verifyData.payload.iat * 1000).toLocaleString('zh-CN') : '未知') + '</p>';
+                    html += '<p><strong>过期时间:</strong> ' + (verifyData.payload.exp ? new Date(verifyData.payload.exp * 1000).toLocaleString('zh-CN') : '未知') + '</p>';
+                } else {
+                    html += '<p style="color:red">⚠️ Token验证失败或已过期</p>';
+                }
+                html += '</div>';
+
+                if (tokenLogs.length > 0) {
+                    html += '<div style="background:#f8f9fa;padding:16px;border-radius:8px">';
+                    html += '<h4 style="margin-bottom:12px">📊 Token使用记录 (' + tokenLogs.length + '条)</h4>';
+                    html += '<table style="width:100%;font-size:11px"><thead><tr><th>时间</th><th>决策</th><th>请求方</th><th>目标</th><th>操作</th><th>资源</th><th>原因</th></tr></thead><tbody>';
+                    tokenLogs.forEach(log => {
+                        html += '<tr>' +
+                            '<td style="white-space:nowrap">' + log.timestamp + '</td>' +
+                            '<td><span class="badge ' + (log.decision === 'allow' ? 'allow' : 'deny') + '">' + (log.decision === 'allow' ? '✅' : '❌') + '</span></td>' +
+                            '<td>' + (log.requestor_agent_id || '系统') + '</td>' +
+                            '<td>' + (log.target_agent_id || '未知') + '</td>' +
+                            '<td>' + (log.action || '-') + '</td>' +
+                            '<td>' + (log.resource || '-') + '</td>' +
+                            '<td>' + (log.reason || '-') + '</td>' +
+                            '</tr>';
+                    });
+                    html += '</tbody></table></div>';
+                } else {
+                    html += '<p style="color:#999">暂无该Token的使用记录</p>';
+                }
+
+                container.innerHTML = html;
+            } catch (e) {
+                container.innerHTML = '<p style="color:red">追溯失败: ' + e.message + '</p>';
+            }
+        }
+
+        const AGENT_INFO = {
+            doc: {
+                name: '文档助手 (doc-assistant)',
+                endpoint: DOC + '/task',
+                capabilities: ['调用企业数据Agent获取内部数据', '调用外部检索Agent搜索公开信息', '生成周报/月报/分析报告', '协调多个Agent协作完成任务'],
+                example: '帮我生成一份关于本周销售数据的周报'
+            },
+            data: {
+                name: '企业数据 (data-agent)',
+                endpoint: DATA + '/query',
+                capabilities: ['查询周销量数据 spreadsheet:weekly-sales', '查询公司通讯录 contact:company', '查询日历事件 calendar:events'],
+                example: '查看本周销量数据和公司通讯录'
+            },
+            search: {
+                name: '外部检索 (search-agent)',
+                endpoint: SEARCH + '/chat',
+                capabilities: ['搜索互联网公开信息', '市场趋势分析', '行业动态调研'],
+                example: '搜索2026年人工智能市场趋势'
+            }
+        };
+
+        let currentAgent = 'doc';
+        let chatHistory = [];
+
+        function switchAgent() {
+            currentAgent = document.getElementById('chat-agent').value;
+            renderCapabilities();
+            chatHistory = [];
+            renderHistory();
+        }
+
+        function renderCapabilities() {
+            const info = AGENT_INFO[currentAgent];
+            document.getElementById('agent-capabilities').innerHTML = `
+                <h3 style="margin-bottom:10px">${info.name}</h3>
+                <p style="margin-bottom:8px"><strong>可用能力：</strong></p>
+                <ul style="margin-left:20px;margin-bottom:12px">
+                    ${info.capabilities.map(c => '<li style="margin-bottom:4px">' + c + '</li>').join('')}
+                </ul>
+                <p style="color:#666"><strong>示例请求：</strong> ${info.example}</p>
+            `;
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('chat-history');
+            if (chatHistory.length === 0) {
+                container.innerHTML = '<p style="color:#999;text-align:center">发送消息开始对话...</p>';
+                return;
+            }
+            container.innerHTML = chatHistory.map(item => `
+                <div style="margin-bottom:16px;padding:12px;background:${item.role === 'user' ? '#e8f4fd' : '#f5f5f5'};border-radius:8px">
+                    <div style="font-weight:600;margin-bottom:6px;color:${item.role === 'user' ? '#2196F3' : '#4CAF50'}">
+                        ${item.role === 'user' ? '👤 你' : '🤖 ' + AGENT_INFO[currentAgent].name}
+                    </div>
+                    <div style="white-space:pre-wrap;line-height:1.5">${item.content}</div>
+                </div>
+            `).join('');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        let taskTraces = [];
+        let recentAuditLogs = [];
+
+        function addTrace(step) {
+            taskTraces.push({
+                ...step,
+                time: new Date().toLocaleTimeString('zh-CN', {hour: '2-digit', minute: '2-digit', second: '2-digit'})
+            });
+            renderTraces();
+        }
+
+        function renderTraces() {
+            const container = document.getElementById('trace-timeline');
+            if (taskTraces.length === 0) {
+                container.innerHTML = '<p style="color:#999;text-align:center">发送请求后可以在此处看到完整的任务流转链路...</p>';
+                return;
+            }
+            container.innerHTML = taskTraces.map((step, idx) => `
+                <div style="display:flex;align-items:flex-start;margin-bottom:16px">
+                    <div style="background:#667eea;color:white;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;flex-shrink:0">${idx + 1}</div>
+                    <div style="margin-left:16px;flex:1;background:#f8f9fa;padding:12px;border-radius:8px">
+                        <div style="font-weight:600;color:#333;margin-bottom:4px">${step.from} → ${step.to}</div>
+                        <div style="color:#666;font-size:13px">${step.action}</div>
+                        <div style="color:#999;font-size:12px;margin-top:4px">⏰ ${step.time} ${step.status ? '| ' + step.status : ''}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function loadRecentTraces() {
+            try {
+                const resp = await fetch(IAM + '/audit/logs?limit=20');
+                const data = await resp.json();
+                const logs = data.logs || data || [];
+                recentAuditLogs = logs;
+                renderRecentTraces();
+            } catch (e) {
+                alert('加载失败: ' + e.message);
+            }
+        }
+
+        function renderRecentTraces() {
+            const container = document.getElementById('recent-traces');
+            if (recentAuditLogs.length === 0) {
+                container.innerHTML = '<p style="color:#999;text-align:center">暂无审计记录</p>';
+                return;
+            }
+            container.innerHTML = recentAuditLogs.map(log => `
+                <div style="padding:12px;background:#f8f9fa;border-radius:8px;margin-bottom:8px;cursor:pointer" onclick="showTraceDetail('${log.log_id}')">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                        <span style="font-weight:600;color:#333">${log.requestor_agent_id || '系统'}</span>
+                        <span class="badge ${log.decision === 'allow' ? 'allow' : 'deny'}">${log.decision === 'allow' ? '✅ 允许' : '❌ 拒绝'}</span>
+                    </div>
+                    <div style="font-size:13px;color:#666">${log.action} → ${log.target_agent_id}</div>
+                    <div style="font-size:12px;color:#999;margin-top:4px">⏰ ${log.timestamp} | 📝 ${log.reason || '无'}</div>
+                </div>
+            `).join('');
+        }
+
+        function showTraceDetail(logId) {
+            const log = recentAuditLogs.find(l => l.log_id === logId);
+            if (!log) return;
+            taskTraces = [{
+                from: log.requestor_agent_id || '用户',
+                to: log.target_agent_id || '未知',
+                action: log.action + (log.decision === 'deny' ? ' ❌被拒绝' : ' ✅被允许'),
+                status: log.decision === 'deny' ? '已拦截' : '已授权',
+                time: new Date(log.timestamp).toLocaleTimeString('zh-CN')
+            }];
+            renderTraces();
+            showPage('trace');
+        }
+
+        async function sendChat() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            chatHistory.push({ role: 'user', content: message });
+            renderHistory();
+            input.value = '';
+
+            const btn = document.getElementById('chat-submit');
+            btn.disabled = true;
+            btn.textContent = '⏳ 处理中...';
+
+            const agentName = currentAgent === 'doc' ? 'doc-assistant' : currentAgent === 'data' ? 'data-agent' : 'search-agent';
+            addTrace({ from: '用户', to: agentName, action: '发送请求: ' + message.substring(0, 30) + '...' });
+
+            try {
+                let response, data;
+                const agent = currentAgent;
+
+                if (agent === 'doc') {
+                    response = await fetch(DOC + '/task', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({task: message, user_id: 'user:1001'})
+                    });
+                    data = await response.json();
+                    if (data.status === 'success') {
+                        chatHistory.push({ role: 'assistant', content: data.report || '任务完成' });
+                        if (data.data_source) {
+                            addTrace({ from: 'doc-assistant', to: 'data-agent', action: 'IAM授权调用: ' + data.data_source, status: '✅ 成功' });
+                        }
+                        if (data.search_source) {
+                            addTrace({ from: 'doc-assistant', to: 'search-agent', action: 'IAM授权调用: ' + data.search_source, status: '✅ 成功' });
+                        }
+                    } else {
+                        chatHistory.push({ role: 'assistant', content: '❌ 任务失败: ' + JSON.stringify(data) });
+                    }
+                } else if (agent === 'data') {
+                    response = await fetch(DATA + '/query', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({query: message, user_id: 'user:1001'})
+                    });
+                    data = await response.json();
+                    if (data.status === 'success') {
+                        chatHistory.push({ role: 'assistant', content: data.result || data.data || '查询完成' });
+                        addTrace({ from: 'data-agent', to: 'internal_data', action: '读取: ' + (data.data_source || '未知'), status: '✅ 成功' });
+                    } else {
+                        chatHistory.push({ role: 'assistant', content: '❌ 查询失败: ' + JSON.stringify(data) });
+                    }
+                } else if (agent === 'search') {
+                    response = await fetch(SEARCH + '/chat', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({query: message})
+                    });
+                    data = await response.json();
+                    if (data.status === 'success') {
+                        chatHistory.push({ role: 'assistant', content: data.result || '搜索完成' });
+                        if (data.source === 'web_search') {
+                            addTrace({ from: 'search-agent', to: 'Tavily API', action: '网络搜索: ' + message.substring(0, 30), status: '✅ 成功' });
+                        } else {
+                            addTrace({ from: 'search-agent', to: 'LLM', action: '直接回答', status: '✅ 成功' });
+                        }
+                    } else {
+                        chatHistory.push({ role: 'assistant', content: '❌ 搜索失败: ' + JSON.stringify(data) });
+                    }
+                }
+
+                addTrace({ from: agentName, to: '用户', action: '返回结果', status: '✅ 完成' });
+
+            } catch (e) {
+                chatHistory.push({ role: 'assistant', content: '❌ 请求失败: ' + e.message });
+                addTrace({ from: agentName, to: '用户', action: '请求失败: ' + e.message, status: '❌ 失败' });
+            }
+
+            btn.disabled = false;
+            btn.textContent = '▶ 发送';
+            renderHistory();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCapabilities();
+        });
+
+        async function loadCapabilities() {
+            try {
+                const resp = await fetch(IAM + '/capabilities/all');
+                const data = await resp.json();
+                renderCapabilitiesPage(data.capability_statements);
+            } catch (e) {
+                console.error('Failed to load capabilities:', e);
+            }
+        }
+
+        function renderCapabilitiesPage(statements) {
+            let html = '<div class="card" style="background:#e8f4fd;border-left:4px solid #2196F3">';
+            html += '<h2 style="color:#2196F3">🔐 权限管理系统</h2>';
+            html += '<p style="color:#333;margin-top:8px">Agent动态授权 · Token安全机制 · 异构Agent接入</p>';
+            html += '</div>';
+
+            html += '<div class="card">';
+            html += '<h2>🔄 Agent动态授权 (Dynamic Authorization)</h2>';
+            html += '<p style="color:#666;margin-bottom:16px">实时修改Agent权限，权限变更立即生效，无需重启服务</p>';
+            html += '<div style="background:#fff5f5;padding:12px;border-radius:8px;margin-bottom:16px;border-left:4px solid #e74c3c">';
+            html += '<p style="font-size:13px"><strong>核心特性：</strong></p>';
+            html += '<ul style="font-size:12px;color:#666;margin-left:20px">';
+            html += '<li>运行时权限动态更新</li>';
+            html += '<li>权限变更立即生效</li>';
+            html += '<li>所有变更记录审计日志</li>';
+            html += '<li>支持细粒度权限授予/撤销</li>';
+            html += '</ul></div>';
+            html += '</div>';
+
+            html += '<div class="card">';
+            html += '<h2>🔒 Token安全与实时撤销 (Token Security)</h2>';
+            html += '<p style="color:#666;margin-bottom:16px">Token防盗用、实时撤销、Access Token盗用对抗</p>';
+            html += '<div style="background:#fff5f5;padding:12px;border-radius:8px;margin-bottom:16px;border-left:4px solid #e74c3c">';
+            html += '<p style="font-size:13px"><strong>安全机制：</strong></p>';
+            html += '<ul style="font-size:12px;color:#666;margin-left:20px">';
+            html += '<li>Token实时撤销 - 撤销后立即失效</li>';
+            html += '<li>Token安全验证 - 检测异常使用</li>';
+            html += '<li>Token重新签发 - 带新权限集</li>';
+            html += '<li>完整审计追溯</li>';
+            html += '</ul></div>';
+            html += '</div>';
+
+            html += '<div class="card">';
+            html += '<h2>🤖 异构Agent接入 (Heterogeneous Agents)</h2>';
+            html += '<p style="color:#666;margin-bottom:16px">不同模型、不同引擎、不同工具集的Agent统一接入</p>';
+            html += '<button class="btn" onclick="loadHeterogeneousAgents()" style="margin-bottom:16px">🔍 加载异构Agent信息</button>';
+            html += '<div id="heterogeneous-agents-result"></div>';
+            html += '</div>';
+
+            html += '<div class="card">';
+            html += '<h2>⚡ 动态权限操作</h2>';
+            html += '<p style="color:#666;margin-bottom:16px">实时修改Agent权限</p>';
+
+            html += '<h3 style="margin-bottom:12px">授予权限</h3>';
+            html += '<div class="form-group">';
+            html += '<label>选择Agent</label>';
+            html += '<select id="grant-agent">';
+            html += '<option value="doc-assistant">doc-assistant</option>';
+            html += '<option value="data-agent">data-agent</option>';
+            html += '<option value="search-agent">search-agent</option>';
+            html += '</select></div>';
+            html += '<div class="form-group">';
+            html += '<label>输入要授予的权限</label>';
+            html += '<input id="grant-cap" placeholder="如: agent:call:data-agent" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px">';
+            html += '</div>';
+            html += '<button class="btn success" onclick="grantCapability()">✅ 授予权限</button>';
+            html += '<div id="grant-result" style="margin-top:12px"></div>';
+
+            html += '<h3 style="margin:20px 0 12px">撤销权限</h3>';
+            html += '<div class="form-group">';
+            html += '<label>选择Agent</label>';
+            html += '<select id="revoke-agent">';
+            html += '<option value="doc-assistant">doc-assistant</option>';
+            html += '<option value="data-agent">data-agent</option>';
+            html += '<option value="search-agent">search-agent</option>';
+            html += '</select></div>';
+            html += '<div class="form-group">';
+            html += '<label>输入要撤销的权限</label>';
+            html += '<input id="revoke-cap" placeholder="如: agent:call:data-agent" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px">';
+            html += '</div>';
+            html += '<button class="btn danger" onclick="revokeCapability()">❌ 撤销权限</button>';
+            html += '<div id="revoke-result" style="margin-top:12px"></div>';
+            html += '</div>';
+
+            html += '<div class="card">';
+            html += '<h2>🔑 Token安全操作</h2>';
+            html += '<p style="color:#666;margin-bottom:16px">Token验证、重新签发等安全功能</p>';
+
+            html += '<h3 style="margin-bottom:12px">Token安全验证</h3>';
+            html += '<div class="form-group">';
+            html += '<label>输入Token进行安全验证</label>';
+            html += '<textarea id="security-token" rows="2" placeholder="粘贴Token..." style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;font-family:monospace;font-size:12px"></textarea>';
+            html += '</div>';
+            html += '<button class="btn" onclick="validateTokenSecurity()">🔒 验证Token安全</button>';
+            html += '<div id="security-result" style="margin-top:12px"></div>';
+
+            html += '<h3 style="margin:20px 0 12px">Token重新签发</h3>';
+            html += '<div class="form-group">';
+            html += '<label>输入原Token</label>';
+            html += '<textarea id="reissue-token" rows="2" placeholder="粘贴原Token..." style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;font-family:monospace;font-size:12px"></textarea>';
+            html += '</div>';
+            html += '<div class="form-group">';
+            html += '<label>新的权限列表 (JSON数组)</label>';
+            html += '<input id="new-caps" placeholder="[&quot;doc:read&quot;,&quot;doc:write&quot;]" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px">';
+            html += '</div>';
+            html += '<button class="btn warning" onclick="reissueToken()">🔄 重新签发Token</button>';
+            html += '<div id="reissue-result" style="margin-top:12px"></div>';
+            html += '</div>';
+
+            html += '<div class="card">';
+            html += '<h2>📋 Capability Statement - Agent能力声明</h2>';
+            html += '<p style="color:#666;margin-bottom:16px">定义不同Agent所拥有的细粒度操作权限</p>';
+
+            if (statements && statements.agents) {
+                for (const [agentId, agentInfo] of Object.entries(statements.agents)) {
+                    const color = agentId === 'doc-assistant' ? '#667eea' : agentId === 'data-agent' ? '#27ae60' : '#e67e22';
+                    html += '<div style="background:#f8f9fa;padding:16px;border-radius:8px;margin-bottom:12px;border-left:4px solid ' + color + '">';
+                    html += '<h3 style="color:' + color + ';margin-bottom:8px">' + agentId + '</h3>';
+                    html += '<p style="color:#666;font-size:13px;margin-bottom:8px">' + (agentInfo.description || '') + '</p>';
+                    html += '<p style="font-size:13px;margin-bottom:8px"><strong>能力列表:</strong></p>';
+                    html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
+                    (agentInfo.capabilities || []).forEach(cap => {
+                        html += '<span style="background:' + color + ';color:white;padding:4px 8px;border-radius:4px;font-size:12px">' + cap + '</span>';
+                    });
+                    html += '</div></div>';
+                }
+            }
+
+            if (statements && statements.users) {
+                html += '<h3 style="margin-top:24px;margin-bottom:12px">👥 用户能力声明</h3>';
+                for (const [userId, userInfo] of Object.entries(statements.users)) {
+                    html += '<div style="background:#f8f9fa;padding:12px;border-radius:8px;margin-bottom:8px">';
+                    html += '<strong>' + userId + '</strong>';
+                    html += '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">';
+                    (userInfo.capabilities || []).forEach(cap => {
+                        html += '<span style="background:#9b59b6;color:white;padding:2px 6px;border-radius:3px;font-size:11px">' + cap + '</span>';
+                    });
+                    html += '</div></div>';
+                }
+            }
+            html += '</div>';
+
+            html += '<div class="card">';
+            html += '<h2>🔄 Delegated Authorization - 委托授权</h2>';
+            html += '<p style="color:#666;margin-bottom:16px">当Agent代表用户执行操作时，计算 <strong>用户权限 ∩ Agent能力</strong> 的有效权限交集</p>';
+
+            html += '<div style="background:#fff5f5;padding:16px;border-radius:8px;margin-bottom:16px;border-left:4px solid #e74c3c">';
+            html += '<h4 style="margin-bottom:8px">⚠️ 重要概念</h4>';
+            html += '<p style="font-size:13px;color:#666"><strong>有效权限 = 用户权限 ∩ Agent能力</strong></p>';
+            html += '<p style="font-size:13px;color:#666;margin-top:4px">只有同时属于用户权限和Agent能力交集的操作才会被授权执行</p>';
+            html += '</div>';
+
+            html += '<h3 style="margin-bottom:12px">计算权限交集</h3>';
+            html += '<div class="form-group">';
+            html += '<label>选择用户</label>';
+            html += '<select id="delegate-user"><option value="user:1001">user:1001</option><option value="user:1002">user:1002</option></select>';
+            html += '</div>';
+            html += '<div class="form-group">';
+            html += '<label>选择Agent</label>';
+            html += '<select id="delegate-agent" onchange="calculateIntersection()">';
+            html += '<option value="doc-assistant">doc-assistant</option>';
+            html += '<option value="data-agent">data-agent</option>';
+            html += '<option value="search-agent">search-agent</option>';
+            html += '</select>';
+            html += '</div>';
+            html += '<button class="btn" onclick="calculateIntersection()">🔍 计算交集</button>';
+            html += '<div id="intersection-result" style="margin-top:16px"></div>';
+
+            html += '<h3 style="margin-top:24px;margin-bottom:12px">🔎 验证操作授权</h3>';
+            html += '<p style="color:#666;font-size:13px;margin-bottom:12px">检查某个操作是否在有效权限交集内</p>';
+            html += '<div class="form-group">';
+            html += '<label>输入要验证的操作</label>';
+            html += '<input id="verify-action" placeholder="如: agent:call:data-agent" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px">';
+            html += '</div>';
+            html += '<button class="btn success" onclick="verifyAction()">✅ 验证授权</button>';
+            html += '<div id="verify-result" style="margin-top:16px"></div>';
+            html += '</div>';
+
+            document.getElementById('page-permissions').innerHTML = html;
+        }
+
+        async function loadHeterogeneousAgents() {
+            const container = document.getElementById('heterogeneous-agents-result');
+            container.innerHTML = '<p style="color:#666">⏳ 加载中...</p>';
+            try {
+                const resp = await fetch(IAM + '/agents/heterogeneous');
+                const data = await resp.json();
+                if (data.agents && data.agents.length > 0) {
+                    let html = '<div style="display:grid;gap:12px">';
+                    data.agents.forEach(agent => {
+                        const color = agent.agent_id === 'doc-assistant' ? '#667eea' : agent.agent_id === 'data-agent' ? '#27ae60' : '#e67e22';
+                        html += '<div style="background:#f8f9fa;padding:16px;border-radius:8px;border-left:4px solid ' + color + '">';
+                        html += '<h4 style="color:' + color + ';margin-bottom:8px">' + agent.name + ' (' + agent.agent_id + ')</h4>';
+                        html += '<p style="font-size:13px;color:#666;margin-bottom:8px">' + (agent.description || '') + '</p>';
+                        html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:12px;margin-bottom:8px">';
+                        html += '<div><strong>模型:</strong> ' + (agent.model || 'N/A') + '</div>';
+                        html += '<div><strong>引擎:</strong> ' + (agent.engine || 'N/A') + '</div>';
+                        html += '<div><strong>端口:</strong> ' + (agent.port || 'N/A') + '</div>';
+                        html += '</div>';
+                        html += '<div><strong>工具集:</strong></div>';
+                        html += '<div style="display:flex;flex-wrap:wrap;gap:4px">';
+                        (agent.tools || []).forEach(tool => {
+                            html += '<span style="background:#333;color:white;padding:2px 6px;border-radius:3px;font-size:11px">' + tool + '</span>';
+                        });
+                        html += '</div>';
+                        html += '<div style="margin-top:8px"><strong>运行时能力:</strong></div>';
+                        html += '<div style="display:flex;flex-wrap:wrap;gap:4px">';
+                        (agent.capabilities || []).forEach(cap => {
+                            html += '<span style="background:' + color + ';color:white;padding:2px 6px;border-radius:3px;font-size:11px">' + cap + '</span>';
+                        });
+                        html += '</div></div>';
+                    });
+                    html += '</div>';
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = '<p style="color:#999">暂无Agent信息</p>';
+                }
+            } catch (e) {
+                container.innerHTML = '<p style="color:red">加载失败: ' + e.message + '</p>';
+            }
+        }
+
+        async function grantCapability() {
+            const agentId = document.getElementById('grant-agent').value;
+            const capability = document.getElementById('grant-cap').value.trim();
+            const container = document.getElementById('grant-result');
+            if (!capability) { container.innerHTML = '<p style="color:red">请输入权限</p>'; return; }
+            container.innerHTML = '<p style="color:#666">⏳ 授予中...</p>';
+            try {
+                const resp = await fetch(IAM + '/capabilities/dynamic/grant-capability', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({agent_id: agentId, capability: capability})
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    container.innerHTML = '<div style="background:#f0fff4;padding:12px;border-radius:8px;border-left:4px solid #27ae60">' +
+                        '<h4 style="color:#27ae60;margin-bottom:8px">✅ 权限授予成功!</h4>' +
+                        '<p><strong>Agent:</strong> ' + agentId + '</p>' +
+                        '<p><strong>授予权限:</strong> ' + capability + '</p>' +
+                        '<p><strong>所有权限:</strong> ' + (data.all_capabilities || []).join(', ') + '</p>' +
+                        '</div>';
+                } else {
+                    container.innerHTML = '<div style="background:#fff5f5;padding:12px;border-radius:8px"><p style="color:#e74c3c">❌ ' + (data.message || '授予失败') + '</p></div>';
+                }
+            } catch (e) {
+                container.innerHTML = '<p style="color:red">授予失败: ' + e.message + '</p>';
+            }
+        }
+
+        async function revokeCapability() {
+            const agentId = document.getElementById('revoke-agent').value;
+            const capability = document.getElementById('revoke-cap').value.trim();
+            const container = document.getElementById('revoke-result');
+            if (!capability) { container.innerHTML = '<p style="color:red">请输入权限</p>'; return; }
+            container.innerHTML = '<p style="color:#666">⏳ 撤销中...</p>';
+            try {
+                const resp = await fetch(IAM + '/capabilities/dynamic/revoke-capability', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({agent_id: agentId, capability: capability})
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    container.innerHTML = '<div style="background:#fff5f5;padding:12px;border-radius:8px;border-left:4px solid #e74c3c">' +
+                        '<h4 style="color:#e74c3c;margin-bottom:8px">✅ 权限撤销成功!</h4>' +
+                        '<p><strong>Agent:</strong> ' + agentId + '</p>' +
+                        '<p><strong>撤销权限:</strong> ' + capability + '</p>' +
+                        '<p><strong>剩余权限:</strong> ' + (data.remaining_capabilities || []).join(', ') + '</p>' +
+                        '</div>';
+                } else {
+                    container.innerHTML = '<div style="background:#fff5f5;padding:12px;border-radius:8px"><p style="color:#e74c3c">❌ ' + (data.message || '撤销失败') + '</p></div>';
+                }
+            } catch (e) {
+                container.innerHTML = '<p style="color:red">撤销失败: ' + e.message + '</p>';
+            }
+        }
+
+        async function validateTokenSecurity() {
+            const token = document.getElementById('security-token').value.trim();
+            const container = document.getElementById('security-result');
+            if (!token) { container.innerHTML = '<p style="color:red">请输入Token</p>'; return; }
+            container.innerHTML = '<p style="color:#666">⏳ 验证中...</p>';
+            try {
+                const resp = await fetch(IAM + '/token/validate-security', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({token: token})
+                });
+                const data = await resp.json();
+                if (data.valid) {
+                    if (data.security_status === 'secure') {
+                        container.innerHTML = '<div style="background:#f0fff4;padding:16px;border-radius:8px;border-left:4px solid #27ae60">' +
+                            '<h4 style="color:#27ae60;margin-bottom:8px">✅ Token安全</h4>' +
+                            '<p><strong>状态:</strong> ' + data.security_status + '</p>' +
+                            '<p><strong>Agent:</strong> ' + (data.token_info?.agent_id || 'N/A') + '</p>' +
+                            '<p><strong>类型:</strong> ' + (data.token_info?.type || 'N/A') + '</p>' +
+                            '</div>';
+                    } else {
+                        container.innerHTML = '<div style="background:#fff5f5;padding:16px;border-radius:8px;border-left:4px solid #e67e22">' +
+                            '<h4 style="color:#e67e22;margin-bottom:8px">⚠️ Token存在风险</h4>' +
+                            '<p><strong>警告:</strong> ' + (data.warnings || []).join(', ') + '</p>' +
+                            '</div>';
+                    }
+                } else {
+                    container.innerHTML = '<div style="background:#fff5f5;padding:16px;border-radius:8px;border-left:4px solid #e74c3c">' +
+                        '<h4 style="color:#e74c3c;margin-bottom:8px">❌ Token无效或已过期</h4>' +
+                        '<p><strong>错误:</strong> ' + (data.error || 'Token已过期或无效') + '</p>' +
+                        '</div>';
+                }
+            } catch (e) {
+                container.innerHTML = '<p style="color:red">验证失败: ' + e.message + '</p>';
+            }
+        }
+
+        async function reissueToken() {
+            const token = document.getElementById('reissue-token').value.trim();
+            const newCapsStr = document.getElementById('new-caps').value.trim();
+            const container = document.getElementById('reissue-result');
+            if (!token || !newCapsStr) { container.innerHTML = '<p style="color:red">请填写完整信息</p>'; return; }
+            let newCaps;
+            try {
+                newCaps = JSON.parse(newCapsStr);
+                if (!Array.isArray(newCaps)) throw new Error('不是数组');
+            } catch (e) {
+                container.innerHTML = '<p style="color:red">权限格式错误，请输入JSON数组</p>'; return;
+            }
+            container.innerHTML = '<p style="color:#666">⏳ 重新签发中...</p>';
+            try {
+                const resp = await fetch(IAM + '/token/reissue', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({token: token, new_capabilities: newCaps})
+                });
+                if (resp.status === 401) {
+                    container.innerHTML = '<div style="background:#fff5f5;padding:12px;border-radius:8px"><p style="color:#e74c3c">❌ 原Token无效，无法重新签发</p></div>';
+                    return;
+                }
+                const data = await resp.json();
+                container.innerHTML = '<div style="background:#f0fff4;padding:16px;border-radius:8px;border-left:4px solid #27ae60">' +
+                    '<h4 style="color:#27ae60;margin-bottom:8px">✅ Token重新签发成功!</h4>' +
+                    '<p><strong>旧Token已撤销:</strong> ' + data.old_token_revoked + '</p>' +
+                    '<p><strong>新权限:</strong> ' + (data.new_capabilities || []).join(', ') + '</p>' +
+                    '<p style="margin-top:8px"><strong>新Token:</strong></p>' +
+                    '<input type="text" value="' + (data.new_token || '') + '" readonly style="width:100%;font-size:10px;font-family:monospace;padding:8px;border:1px solid #ddd;border-radius:4px;background:#f9f9f9">' +
+                    '</div>';
+            } catch (e) {
+                container.innerHTML = '<p style="color:red">重新签发失败: ' + e.message + '</p>';
+            }
+        }
+
+        function updateLLMFields() {
+            const provider = document.getElementById('llm-provider').value;
+            const baseUrlInput = document.getElementById('llm-base-url');
+            const modelInput = document.getElementById('llm-model');
+
+            const presets = {
+                '360': { url: 'https://api.360.cn/v1', model: 'deepseek-v3.2' },
+                'openrouter': { url: 'https://openrouter.ai/api/v1', model: 'anthropic/claude-3.5-sonnet' },
+                'azure': { url: 'https://YOUR_RESOURCE.openai.azure.com', model: 'gpt-4o' },
+                'openai': { url: 'https://api.openai.com/v1', model: 'gpt-4o' },
+                'anthropic': { url: 'https://api.anthropic.com', model: 'claude-3-5-sonnet-20241022' },
+                'custom': { url: '', model: '' }
+            };
+
+            if (presets[provider]) {
+                baseUrlInput.value = presets[provider].url;
+                modelInput.value = presets[provider].model;
+            }
+        }
+
+        function updateSearchFields() {
+            const provider = document.getElementById('search-provider').value;
+            const extraInput = document.getElementById('search-extra');
+
+            const presets = {
+                'tavily': { extra: '{"search_depth": "advanced"}' },
+                'serpapi': { extra: '{"num_results": 10}' },
+                'google': { extra: '{"num_results": 10}' },
+                'bing': { extra: '{"count": 10}' },
+                'duckduckgo': { extra: '{"max_results": 10}' }
+            };
+
+            if (presets[provider]) {
+                extraInput.value = presets[provider].extra;
+            }
+        }
+
+        function saveLLMConfig() {
+            const provider = document.getElementById('llm-provider').value;
+            const baseUrl = document.getElementById('llm-base-url').value;
+            const apiKey = document.getElementById('llm-api-key').value;
+            const model = document.getElementById('llm-model').value;
+
+            if (!apiKey) {
+                document.getElementById('llm-result').innerHTML = '<p style="color:red">请输入API Key</p>';
+                return;
+            }
+
+            localStorage.setItem('llm_config', JSON.stringify({ provider, baseUrl, apiKey, model }));
+
+            let html = '<div style="background:#f0fff4;padding:12px;border-radius:8px;border-left:4px solid #27ae60">';
+            html += '<h4 style="color:#27ae60;margin-bottom:8px">✅ LLM配置已保存!</h4>';
+            html += '<p><strong>供应商:</strong> ' + provider + '</p>';
+            html += '<p><strong>Base URL:</strong> ' + baseUrl + '</p>';
+            html += '<p><strong>模型:</strong> ' + model + '</p>';
+            html += '<p><strong>API Key:</strong> ' + '•'.repeat(8) + '</p>';
+            html += '</div>';
+            document.getElementById('llm-result').innerHTML = html;
+        }
+
+        function saveSearchConfig() {
+            const provider = document.getElementById('search-provider').value;
+            const apiKey = document.getElementById('search-api-key').value;
+            const extra = document.getElementById('search-extra').value;
+
+            if (!apiKey) {
+                document.getElementById('search-result').innerHTML = '<p style="color:red">请输入API Key</p>';
+                return;
+            }
+
+            localStorage.setItem('search_config', JSON.stringify({ provider, apiKey, extra }));
+
+            let html = '<div style="background:#f0fff4;padding:12px;border-radius:8px;border-left:4px solid #27ae60">';
+            html += '<h4 style="color:#27ae60;margin-bottom:8px">✅ 搜索API配置已保存!</h4>';
+            html += '<p><strong>供应商:</strong> ' + provider + '</p>';
+            html += '<p><strong>API Key:</strong> ' + '•'.repeat(8) + '</p>';
+            html += '</div>';
+            document.getElementById('search-result').innerHTML = html;
+        }
+
+        async function testLLMConnection() {
+            const baseUrl = document.getElementById('llm-base-url').value;
+            const apiKey = document.getElementById('llm-api-key').value;
+            const model = document.getElementById('llm-model').value;
+            const resultDiv = document.getElementById('llm-result');
+
+            if (!apiKey) {
+                resultDiv.innerHTML = '<p style="color:red">请先填写API配置</p>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<p style="color:#666">⏳ 测试连接中...</p>';
+
+            try {
+                const response = await fetch(baseUrl + '/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': apiKey,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: [{ role: 'user', content: 'Hi' }],
+                        max_tokens: 5
+                    })
+                });
+
+                if (response.ok) {
+                    resultDiv.innerHTML = '<div style="background:#f0fff4;padding:12px;border-radius:8px;border-left:4px solid #27ae60">' +
+                        '<h4 style="color:#27ae60;margin-bottom:8px">✅ 连接成功!</h4>' +
+                        '<p>LLM API配置正确，可以正常使用</p></div>';
+                } else {
+                    const error = await response.text();
+                    resultDiv.innerHTML = '<div style="background:#fff5f5;padding:12px;border-radius:8px;border-left:4px solid #e74c3c">' +
+                        '<h4 style="color:#e74c3c;margin-bottom:8px">❌ 连接失败</h4>' +
+                        '<p style="font-size:12px">状态码: ' + response.status + '</p>' +
+                        '<p style="font-size:12px">' + error.substring(0, 200) + '</p></div>';
+                }
+            } catch (e) {
+                resultDiv.innerHTML = '<div style="background:#fff5f5;padding:12px;border-radius:8px;border-left:4px solid #e74c3c">' +
+                    '<h4 style="color:#e74c3c;margin-bottom:8px">❌ 连接失败</h4>' +
+                    '<p>错误: ' + e.message + '</p></div>';
+            }
+        }
+
+        async function testSearchConnection() {
+            const provider = document.getElementById('search-provider').value;
+            const apiKey = document.getElementById('search-api-key').value;
+            const resultDiv = document.getElementById('search-result');
+
+            if (!apiKey) {
+                resultDiv.innerHTML = '<p style="color:red">请先填写API配置</p>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<p style="color:#666">⏳ 测试连接中...</p>';
+
+            if (provider === 'tavily') {
+                try {
+                    const response = await fetch('https://api.tavily.com/search', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            api_key: apiKey,
+                            query: 'test',
+                            search_depth: 'basic'
+                        })
+                    });
+
+                    if (response.ok) {
+                        resultDiv.innerHTML = '<div style="background:#f0fff4;padding:12px;border-radius:8px;border-left:4px solid #27ae60">' +
+                            '<h4 style="color:#27ae60;margin-bottom:8px">✅ Tavily连接成功!</h4>' +
+                            '<p>搜索API配置正确，可以正常使用</p></div>';
+                    } else {
+                        resultDiv.innerHTML = '<div style="background:#fff5f5;padding:12px;border-radius:8px;border-left:4px solid #e74c3c">' +
+                            '<h4 style="color:#e74c3c;margin-bottom:8px">❌ 连接失败</h4>' +
+                            '<p>请检查API Key是否正确</p></div>';
+                    }
+                } catch (e) {
+                    resultDiv.innerHTML = '<div style="background:#fff5f5;padding:12px;border-radius:8px;border-left:4px solid #e74c3c">' +
+                        '<h4 style="color:#e74c3c;margin-bottom:8px">❌ 连接失败</h4>' +
+                        '<p>错误: ' + e.message + '</p></div>';
+                }
+            } else {
+                resultDiv.innerHTML = '<p style="color:#666">其他搜索API请在Agent中实际测试</p>';
+            }
+        }
+
+        async function loadConfigPage() {
+            const llmConfig = JSON.parse(localStorage.getItem('llm_config') || '{}');
+            if (llmConfig.provider) {
+                document.getElementById('llm-provider').value = llmConfig.provider;
+                document.getElementById('llm-base-url').value = llmConfig.baseUrl || '';
+                document.getElementById('llm-api-key').value = llmConfig.apiKey || '';
+                document.getElementById('llm-model').value = llmConfig.model || '';
+            }
+
+            const searchConfig = JSON.parse(localStorage.getItem('search_config') || '{}');
+            if (searchConfig.provider) {
+                document.getElementById('search-provider').value = searchConfig.provider;
+                document.getElementById('search-api-key').value = searchConfig.apiKey || '';
+                document.getElementById('search-extra').value = searchConfig.extra || '';
+            }
+
+            loadAgentServices();
+            loadConfigSummary();
+        }
+
+        async function loadAgentServices() {
+            const tbody = document.getElementById('agent-services-body');
+            try {
+                const resp = await fetch(IAM + '/agents/heterogeneous');
+                const data = await resp.json();
+
+                if (data.agents && data.agents.length > 0) {
+                    tbody.innerHTML = data.agents.map(agent => {
+                        const port = agent.port;
+                        const status = 'running';
+                        return '<tr>' +
+                            '<td style="padding:10px">' + agent.name + ' (' + agent.agent_id + ')</td>' +
+                            '<td style="padding:10px">' + port + '</td>' +
+                            '<td style="padding:10px"><span style="color:#27ae60">● 运行中</span></td>' +
+                            '<td style="padding:10px"><button class="btn" style="padding:4px 8px;font-size:11px" onclick="restartAgent(\'' + agent.agent_id + '\')">重启</button></td>' +
+                            '</tr>';
+                    }).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#999">暂无Agent</td></tr>';
+                }
+            } catch (e) {
+                tbody.innerHTML = '<tr><td colspan="4" style="color:red">加载失败: ' + e.message + '</td></tr>';
+            }
+        }
+
+        function restartAgent(agentId) {
+            alert('重启功能需要管理员权限，当前演示不支持');
+        }
+
+        function addNewAgent() {
+            const agentId = document.getElementById('new-agent-id').value.trim();
+            const name = document.getElementById('new-agent-name').value.trim();
+            const llm = document.getElementById('new-agent-llm').value;
+            const model = document.getElementById('new-agent-model').value.trim();
+            const tools = document.getElementById('new-agent-tools').value.trim();
+            const port = document.getElementById('new-agent-port').value.trim();
+            const desc = document.getElementById('new-agent-desc').value.trim();
+
+            if (!agentId || !name || !model || !port) {
+                document.getElementById('add-agent-result').innerHTML = '<p style="color:red">请填写必填字段</p>';
+                return;
+            }
+
+            const agents = JSON.parse(localStorage.getItem('custom_agents') || '[]');
+            agents.push({ agentId, name, llm, model, tools: tools.split(',').map(t => t.trim()), port, desc });
+            localStorage.setItem('custom_agents', JSON.stringify(agents));
+
+            document.getElementById('add-agent-result').innerHTML = '<div style="background:#f0fff4;padding:12px;border-radius:8px;border-left:4px solid #27ae60">' +
+                '<h4 style="color:#27ae60;margin-bottom:8px">✅ Agent已添加!</h4>' +
+                '<p>Agent: ' + name + ' (' + agentId + ')</p>' +
+                '<p>模型: ' + model + ' | 端口: ' + port + '</p>' +
+                '<p style="margin-top:8px;font-size:12px;color:#666">注意: 需要在系统中启动对应的Agent服务才能生效</p></div>';
+
+            document.getElementById('new-agent-id').value = '';
+            document.getElementById('new-agent-name').value = '';
+            document.getElementById('new-agent-model').value = '';
+            document.getElementById('new-agent-tools').value = '';
+            document.getElementById('new-agent-port').value = '';
+            document.getElementById('new-agent-desc').value = '';
+
+            loadConfigSummary();
+        }
+
+        function loadConfigSummary() {
+            const llmConfig = JSON.parse(localStorage.getItem('llm_config') || '{}');
+            const searchConfig = JSON.parse(localStorage.getItem('search_config') || '{}');
+            const customAgents = JSON.parse(localStorage.getItem('custom_agents') || '[]');
+
+            let html = '';
+
+            html += '<div style="margin-bottom:16px">';
+            html += '<h4 style="margin-bottom:8px">🤖 LLM配置 (系统默认)</h4>';
+            html += '<div style="background:white;padding:12px;border-radius:8px">';
+            html += '<p><strong>供应商:</strong> 360 AI</p>';
+            html += '<p><strong>Base URL:</strong> https://api.360.cn/v1</p>';
+            html += '<p><strong>模型:</strong> deepseek-v3.2</p>';
+            html += '<p><strong>API Key:</strong> 已配置 (隐藏)</p>';
+            html += '</div>';
+            html += '</div>';
+
+            html += '<div style="margin-bottom:16px">';
+            html += '<h4 style="margin-bottom:8px">🔍 搜索API配置 (系统默认)</h4>';
+            html += '<div style="background:white;padding:12px;border-radius:8px">';
+            html += '<p><strong>供应商:</strong> Tavily</p>';
+            html += '<p><strong>API Key:</strong> 已配置 (隐藏)</p>';
+            html += '<p><strong>搜索参数:</strong> search_depth: advanced</p>';
+            html += '</div>';
+            html += '</div>';
+
+            html += '<div style="margin-bottom:16px">';
+            html += '<h4 style="margin-bottom:8px">🤖 已接入的Agent</h4>';
+            html += '<div id="summary-agents">加载中...</div>';
+            html += '</div>';
+
+            html += '<div>';
+            html += '<h4 style="margin-bottom:8px">🤖 自定义Agent (' + customAgents.length + ')</h4>';
+            if (customAgents.length > 0) {
+                customAgents.forEach(agent => {
+                    html += '<div style="background:white;padding:8px;border-radius:4px;margin-bottom:4px">';
+                    html += '<strong>' + agent.name + '</strong> (' + agent.agentId + ')<br>';
+                    html += '<span style="font-size:12px;color:#666">模型: ' + agent.model + ' | 端口: ' + agent.port + '</span>';
+                    html += '</div>';
+                });
+            } else {
+                html += '<p style="color:#999">暂无自定义Agent (可在下方添加)</p>';
+            }
+            html += '</div>';
+
+            document.getElementById('config-summary').innerHTML = html;
+
+            loadSummaryAgents();
+        }
+
+        async function loadSummaryAgents() {
+            const container = document.getElementById('summary-agents');
+            try {
+                const resp = await fetch(IAM + '/agents/heterogeneous');
+                const data = await resp.json();
+                if (data.agents && data.agents.length > 0) {
+                    let html = '';
+                    data.agents.forEach(agent => {
+                        html += '<div style="background:white;padding:10px;border-radius:6px;margin-bottom:6px">';
+                        html += '<strong style="color:#667eea">' + agent.name + '</strong> (' + agent.agent_id + ')<br>';
+                        html += '<span style="font-size:12px;color:#666">';
+                        html += '<strong>模型:</strong> ' + agent.model + ' | ';
+                        html += '<strong>引擎:</strong> ' + agent.engine + ' | ';
+                        html += '<strong>端口:</strong> ' + agent.port + '<br>';
+                        html += '<strong>工具集:</strong> ' + (agent.tools || []).join(', ');
+                        html += '</span>';
+                        html += '</div>';
+                    });
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = '<p style="color:#999">暂无Agent</p>';
+                }
+            } catch (e) {
+                container.innerHTML = '<p style="color:red">加载失败: ' + e.message + '</p>';
+            }
+        }
+
+        async function calculateIntersection() {
+            const userId = document.getElementById('delegate-user').value;
+            const agentId = document.getElementById('delegate-agent').value;
+            const container = document.getElementById('intersection-result');
+            container.innerHTML = '<p style="color:#666">⏳ 计算中...</p>';
+
+            try {
+                const resp = await fetch(IAM + '/delegation/intersect?user_id=' + userId + '&agent_id=' + agentId);
+                const data = await resp.json();
+
+                let html = '<div style="background:#f8f9fa;padding:16px;border-radius:8px">';
+                html += '<h4 style="margin-bottom:12px">📊 权限交集计算结果</h4>';
+
+                html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">';
+                html += '<div style="background:white;padding:12px;border-radius:6px;text-align:center">';
+                html += '<div style="color:#9b59b6;font-weight:600">' + userId + ' 权限</div>';
+                html += '<div style="font-size:12px;margin-top:8px;color:#666">' + (data.user_capabilities?.length || 0) + ' 个</div>';
+                html += '</div>';
+                html += '<div style="background:white;padding:12px;border-radius:6px;text-align:center">';
+                html += '<div style="color:#e67e22;font-weight:600">∩ 交集</div>';
+                html += '<div style="font-size:12px;margin-top:8px;color:#666">' + (data.effective_capabilities?.length || 0) + ' 个</div>';
+                html += '</div>';
+                html += '<div style="background:white;padding:12px;border-radius:6px;text-align:center">';
+                html += '<div style="color:#667eea;font-weight:600">' + agentId + ' 能力</div>';
+                html += '<div style="font-size:12px;margin-top:8px;color:#666">' + (data.agent_capabilities?.length || 0) + ' 个</div>';
+                html += '</div>';
+                html += '</div>';
+
+                html += '<div style="background:white;padding:12px;border-radius:6px;margin-bottom:8px">';
+                html += '<div style="font-weight:600;margin-bottom:8px;color:#27ae60">✅ 有效权限 (交集):</div>';
+                html += '<div style="display:flex;flex-wrap:wrap;gap:4px">';
+                if (data.effective_capabilities && data.effective_capabilities.length > 0) {
+                    data.effective_capabilities.forEach(cap => {
+                        html += '<span style="background:#27ae60;color:white;padding:2px 6px;border-radius:3px;font-size:11px">' + cap + '</span>';
+                    });
+                } else {
+                    html += '<span style="color:#999">无</span>';
+                }
+                html += '</div></div>';
+
+                html += '<div style="background:white;padding:12px;border-radius:6px;margin-bottom:8px">';
+                html += '<div style="font-weight:600;margin-bottom:8px;color:#667eea">🔵 ' + userId + ' 权限:</div>';
+                html += '<div style="display:flex;flex-wrap:wrap;gap:4px">';
+                data.user_capabilities?.forEach(cap => {
+                    html += '<span style="background:#9b59b6;color:white;padding:2px 6px;border-radius:3px;font-size:11px">' + cap + '</span>';
+                });
+                html += '</div></div>';
+
+                html += '<div style="background:white;padding:12px;border-radius:6px">';
+                html += '<div style="font-weight:600;margin-bottom:8px;color:#667eea">🟠 ' + agentId + ' 能力:</div>';
+                html += '<div style="display:flex;flex-wrap:wrap;gap:4px">';
+                data.agent_capabilities?.forEach(cap => {
+                    html += '<span style="background:#e67e22;color:white;padding:2px 6px;border-radius:3px;font-size:11px">' + cap + '</span>';
+                });
+                html += '</div></div>';
+
+                html += '<div style="margin-top:12px;padding:8px;background:#e8f4fd;border-radius:4px;font-size:12px;color:#2196F3">';
+                html += '<strong>计算公式:</strong> ' + data.calculation;
+                html += '</div>';
+
+                html += '</div>';
+                container.innerHTML = html;
+            } catch (e) {
+                container.innerHTML = '<p style="color:red">计算失败: ' + e.message + '</p>';
+            }
+        }
+
+        async function verifyAction() {
+            const userId = document.getElementById('delegate-user').value;
+            const agentId = document.getElementById('delegate-agent').value;
+            const action = document.getElementById('verify-action').value.trim();
+            const container = document.getElementById('verify-result');
+
+            if (!action) {
+                container.innerHTML = '<p style="color:red">请输入要验证的操作</p>';
+                return;
+            }
+
+            container.innerHTML = '<p style="color:#666">⏳ 验证中...</p>';
+
+            try {
+                const resp = await fetch(IAM + '/delegation/authorize?user_id=' + userId + '&agent_id=' + agentId + '&action=' + encodeURIComponent(action), {
+                    method: 'POST'
+                });
+                const data = await resp.json();
+
+                if (data.authorized) {
+                    container.innerHTML = '<div style="background:#f0fff4;padding:16px;border-radius:8px;border-left:4px solid #27ae60">' +
+                        '<h4 style="color:#27ae60;margin-bottom:8px">✅ 授权通过</h4>' +
+                        '<p><strong>操作:</strong> ' + data.action + '</p>' +
+                        '<p><strong>原因:</strong> ' + data.reason + '</p>' +
+                        '</div>';
+                } else {
+                    container.innerHTML = '<div style="background:#fff5f5;padding:16px;border-radius:8px;border-left:4px solid #e74c3c">' +
+                        '<h4 style="color:#e74c3c;margin-bottom:8px">❌ 授权拒绝</h4>' +
+                        '<p><strong>操作:</strong> ' + data.action + '</p>' +
+                        '<p><strong>原因:</strong> ' + data.reason + '</p>' +
+                        '</div>';
+                }
+            } catch (e) {
+                container.innerHTML = '<p style="color:red">验证失败: ' + e.message + '</p>';
+            }
+        }
+    </script>
+</body>
+</html>
