@@ -5,29 +5,66 @@
         [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
         
   @app.on_event("startup")
-INFO:     Started server process [97099]
+INFO:     Started server process [45287]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 [ALERT:INFO] AegisLink IAM服务启动
-INFO:     127.0.0.1:58935 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58937 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58937 - "GET /monitoring/metrics HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58935 - "GET /monitoring/metrics HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58995 - "GET /audit/logs?limit=20 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59067 - "GET /audit/logs?limit=100 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59069 - "GET /audit/logs?limit=100 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59069 - "GET /monitoring/metrics HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59067 - "GET /monitoring/metrics HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59067 - "GET /monitoring/alerts HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59069 - "GET /monitoring/alerts HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59069 - "GET /capabilities/all HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59069 - "GET /capabilities/all HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59078 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59078 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59081 - "GET /monitoring/metrics HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59078 - "GET /monitoring/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56931 - "GET / HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56931 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57112 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57112 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57112 - "GET /monitoring/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57114 - "GET /monitoring/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58090 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58090 - "GET /monitoring/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58164 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58187 - "OPTIONS /token/issue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58187 - "POST /token/issue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58253 - "POST /token/issue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58255 - "POST /auth/call?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhZWdpc2xpbmstaWFtIiwic3ViIjoiYWdlbnQ6ZG9jLWFzc2lzdGFudCIsImFnZW50X2lkIjoiZG9jLWFzc2lzdGFudCIsImFnZW50X3JvbGUiOiJkb2Nfd3JpdGVyIiwiaWF0IjoxNzc3OTIwMTIwLjM1MDk4NSwiZXhwIjoxNzc3OTIzNzIwLjM1MDk4NSwianRpIjoiZWFjODQ3NzQtNGU2Zi00NGUzLTkyZmItN2M2MjU2OGE0MWU0IiwiY2FwYWJpbGl0aWVzIjpbImRvYzpyZWFkIiwiZG9jOndyaXRlIiwiYWdlbnQ6Y2FsbDpkYXRhLWFnZW50IiwiYWdlbnQ6Y2FsbDpzZWFyY2gtYWdlbnQiXSwidHJ1c3RfY2hhaW4iOltdLCJkZWxlZ2F0ZWRfdXNlciI6InVzZXI6MTAwMSJ9.adbk3NfHk8lvqQplwJAv5vv6u7uXZvkcybzvrGINRGI HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58259 - "POST /auth/verify-call HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58310 - "POST /auth/call?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhZWdpc2xpbmstaWFtIiwic3ViIjoiYWdlbnQ6ZG9jLWFzc2lzdGFudCIsImFnZW50X2lkIjoiZG9jLWFzc2lzdGFudCIsImFnZW50X3JvbGUiOiJkb2Nfd3JpdGVyIiwiaWF0IjoxNzc3OTIwMTIwLjM1MDk4NSwiZXhwIjoxNzc3OTIzNzIwLjM1MDk4NSwianRpIjoiZWFjODQ3NzQtNGU2Zi00NGUzLTkyZmItN2M2MjU2OGE0MWU0IiwiY2FwYWJpbGl0aWVzIjpbImRvYzpyZWFkIiwiZG9jOndyaXRlIiwiYWdlbnQ6Y2FsbDpkYXRhLWFnZW50IiwiYWdlbnQ6Y2FsbDpzZWFyY2gtYWdlbnQiXSwidHJ1c3RfY2hhaW4iOltdLCJkZWxlZ2F0ZWRfdXNlciI6InVzZXI6MTAwMSJ9.adbk3NfHk8lvqQplwJAv5vv6u7uXZvkcybzvrGINRGI HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58314 - "POST /token/verify HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58455 - "POST /token/issue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58457 - "POST /auth/call?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhZWdpc2xpbmstaWFtIiwic3ViIjoiYWdlbnQ6c2VhcmNoLWFnZW50IiwiYWdlbnRfaWQiOiJzZWFyY2gtYWdlbnQiLCJhZ2VudF9yb2xlIjoid2ViX3NlYXJjaGVyIiwiaWF0IjoxNzc3OTIwMTU5LjM4MDE3OSwiZXhwIjoxNzc3OTIzNzU5LjM4MDE3OSwianRpIjoiNTI0MDYzY2QtODNmYy00M2I5LTg2MjMtMjJjNTA0MGZjZjg4IiwiY2FwYWJpbGl0aWVzIjpbIndlYjpzZWFyY2giXSwidHJ1c3RfY2hhaW4iOltdfQ.0M7AdyAy8Uj-Pfzxh7KORqMC_ATvnj_bF5QepAaMgEE HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:58492 - "GET /audit/logs?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58646 - "OPTIONS /token/revoke HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58646 - "POST /token/revoke HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58677 - "POST /token/issue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58677 - "OPTIONS /auth/call?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhZWdpc2xpbmstaWFtIiwic3ViIjoiYWdlbnQ6c2VhcmNoLWFnZW50IiwiYWdlbnRfaWQiOiJzZWFyY2gtYWdlbnQiLCJhZ2VudF9yb2xlIjoid2ViX3NlYXJjaGVyIiwiaWF0IjoxNzc3OTIwMjA2LjYxODYyMiwiZXhwIjoxNzc3OTIzODA2LjYxODYyMiwianRpIjoiMGY4NGFmYjUtOGJmNS00YWYyLWEyMGQtOWMxMmZlOTlkNWM2IiwiY2FwYWJpbGl0aWVzIjpbIndlYjpzZWFyY2giXSwidHJ1c3RfY2hhaW4iOltdfQ.HJEvg4vwe_KVa3cTAT_09XRRXTQOO6TAqpUGSMSLiqY HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58677 - "POST /auth/call?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhZWdpc2xpbmstaWFtIiwic3ViIjoiYWdlbnQ6c2VhcmNoLWFnZW50IiwiYWdlbnRfaWQiOiJzZWFyY2gtYWdlbnQiLCJhZ2VudF9yb2xlIjoid2ViX3NlYXJjaGVyIiwiaWF0IjoxNzc3OTIwMjA2LjYxODYyMiwiZXhwIjoxNzc3OTIzODA2LjYxODYyMiwianRpIjoiMGY4NGFmYjUtOGJmNS00YWYyLWEyMGQtOWMxMmZlOTlkNWM2IiwiY2FwYWJpbGl0aWVzIjpbIndlYjpzZWFyY2giXSwidHJ1c3RfY2hhaW4iOltdfQ.HJEvg4vwe_KVa3cTAT_09XRRXTQOO6TAqpUGSMSLiqY HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:58776 - "OPTIONS /token/verify HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58776 - "POST /token/verify HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:58847 - "POST /token/issue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58847 - "OPTIONS /auth/call?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhZWdpc2xpbmstaWFtIiwic3ViIjoiYWdlbnQ6ZG9jLWFzc2lzdGFudCIsImFnZW50X2lkIjoiZG9jLWFzc2lzdGFudCIsImFnZW50X3JvbGUiOiJjb29yZGluYXRvciIsImlhdCI6MTc3NzkyMDIxNC43MTg4MzcsImV4cCI6MTc3NzkyMzgxNC43MTg4MzcsImp0aSI6ImEyNWU1YjY3LTg2ZWItNDhiNC1iNzRmLWVjNjQ1NDlmZTc3ZCIsImNhcGFiaWxpdGllcyI6WyJkb2M6cmVhZCIsImRvYzp3cml0ZSIsImFnZW50OmNhbGw6ZGF0YS1hZ2VudCIsImFnZW50OmNhbGw6c2VhcmNoLWFnZW50Il0sInRydXN0X2NoYWluIjpbXX0.4tsWPZ5MGSFgXRc-Hnos_iNGyJNIC0HCD3PKWZmViJc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58847 - "POST /auth/call?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhZWdpc2xpbmstaWFtIiwic3ViIjoiYWdlbnQ6ZG9jLWFzc2lzdGFudCIsImFnZW50X2lkIjoiZG9jLWFzc2lzdGFudCIsImFnZW50X3JvbGUiOiJjb29yZGluYXRvciIsImlhdCI6MTc3NzkyMDIxNC43MTg4MzcsImV4cCI6MTc3NzkyMzgxNC43MTg4MzcsImp0aSI6ImEyNWU1YjY3LTg2ZWItNDhiNC1iNzRmLWVjNjQ1NDlmZTc3ZCIsImNhcGFiaWxpdGllcyI6WyJkb2M6cmVhZCIsImRvYzp3cml0ZSIsImFnZW50OmNhbGw6ZGF0YS1hZ2VudCIsImFnZW50OmNhbGw6c2VhcmNoLWFnZW50Il0sInRydXN0X2NoYWluIjpbXX0.4tsWPZ5MGSFgXRc-Hnos_iNGyJNIC0HCD3PKWZmViJc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58851 - "POST /auth/verify-call HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59007 - "POST /auth/call?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhZWdpc2xpbmstaWFtIiwic3ViIjoiYWdlbnQ6ZG9jLWFzc2lzdGFudCIsImFnZW50X2lkIjoiZG9jLWFzc2lzdGFudCIsImFnZW50X3JvbGUiOiJkb2Nfd3JpdGVyIiwiaWF0IjoxNzc3OTIwMTIwLjM1MDk4NSwiZXhwIjoxNzc3OTIzNzIwLjM1MDk4NSwianRpIjoiZWFjODQ3NzQtNGU2Zi00NGUzLTkyZmItN2M2MjU2OGE0MWU0IiwiY2FwYWJpbGl0aWVzIjpbImRvYzpyZWFkIiwiZG9jOndyaXRlIiwiYWdlbnQ6Y2FsbDpkYXRhLWFnZW50IiwiYWdlbnQ6Y2FsbDpzZWFyY2gtYWdlbnQiXSwidHJ1c3RfY2hhaW4iOltdLCJkZWxlZ2F0ZWRfdXNlciI6InVzZXI6MTAwMSJ9.adbk3NfHk8lvqQplwJAv5vv6u7uXZvkcybzvrGINRGI HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59013 - "POST /token/verify HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59278 - "POST /token/issue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59280 - "POST /auth/call?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhZWdpc2xpbmstaWFtIiwic3ViIjoiYWdlbnQ6c2VhcmNoLWFnZW50IiwiYWdlbnRfaWQiOiJzZWFyY2gtYWdlbnQiLCJhZ2VudF9yb2xlIjoid2ViX3NlYXJjaGVyIiwiaWF0IjoxNzc3OTIwMjkxLjYxNDA0OSwiZXhwIjoxNzc3OTIzODkxLjYxNDA0OSwianRpIjoiMzQyZTUwMjYtNjA0MC00NzY3LTk5MzItYjA1MmIzNDhlZjJkIiwiY2FwYWJpbGl0aWVzIjpbIndlYjpzZWFyY2giXSwidHJ1c3RfY2hhaW4iOltdfQ.gQMrmw-YLLuwrVwx1SQZTlLhvylLtbEU_VWnAORKmps HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:59328 - "POST /auth/call?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhZWdpc2xpbmstaWFtIiwic3ViIjoiYWdlbnQ6ZG9jLWFzc2lzdGFudCIsImFnZW50X2lkIjoiZG9jLWFzc2lzdGFudCIsImFnZW50X3JvbGUiOiJkb2Nfd3JpdGVyIiwiaWF0IjoxNzc3OTIwMTIwLjM1MDk4NSwiZXhwIjoxNzc3OTIzNzIwLjM1MDk4NSwianRpIjoiZWFjODQ3NzQtNGU2Zi00NGUzLTkyZmItN2M2MjU2OGE0MWU0IiwiY2FwYWJpbGl0aWVzIjpbImRvYzpyZWFkIiwiZG9jOndyaXRlIiwiYWdlbnQ6Y2FsbDpkYXRhLWFnZW50IiwiYWdlbnQ6Y2FsbDpzZWFyY2gtYWdlbnQiXSwidHJ1c3RfY2hhaW4iOltdLCJkZWxlZ2F0ZWRfdXNlciI6InVzZXI6MTAwMSJ9.adbk3NfHk8lvqQplwJAv5vv6u7uXZvkcybzvrGINRGI HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59332 - "POST /auth/verify-call HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59410 - "POST /auth/call?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhZWdpc2xpbmstaWFtIiwic3ViIjoiYWdlbnQ6ZG9jLWFzc2lzdGFudCIsImFnZW50X2lkIjoiZG9jLWFzc2lzdGFudCIsImFnZW50X3JvbGUiOiJkb2Nfd3JpdGVyIiwiaWF0IjoxNzc3OTIwMTIwLjM1MDk4NSwiZXhwIjoxNzc3OTIzNzIwLjM1MDk4NSwianRpIjoiZWFjODQ3NzQtNGU2Zi00NGUzLTkyZmItN2M2MjU2OGE0MWU0IiwiY2FwYWJpbGl0aWVzIjpbImRvYzpyZWFkIiwiZG9jOndyaXRlIiwiYWdlbnQ6Y2FsbDpkYXRhLWFnZW50IiwiYWdlbnQ6Y2FsbDpzZWFyY2gtYWdlbnQiXSwidHJ1c3RfY2hhaW4iOltdLCJkZWxlZ2F0ZWRfdXNlciI6InVzZXI6MTAwMSJ9.adbk3NfHk8lvqQplwJAv5vv6u7uXZvkcybzvrGINRGI HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59415 - "POST /token/verify HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59631 - "GET /audit/logs?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59631 - "GET /audit/logs?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59680 - "GET /audit/logs?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59746 - "GET /audit/logs?limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59748 - "GET /audit/logs?limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59764 - "GET /monitoring/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59782 - "GET /monitoring/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59782 - "GET /monitoring/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59764 - "GET /monitoring/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59811 - "GET /capabilities/all HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59813 - "GET /capabilities/all HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59856 - "GET /agents/heterogeneous HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59947 - "GET /agents/heterogeneous HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59949 - "GET /agents/heterogeneous HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59951 - "GET /agents/heterogeneous HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59947 - "GET /agents/heterogeneous HTTP/1.1" 200 OK
 INFO:     Shutting down
 INFO:     Waiting for application shutdown.
 INFO:     Application shutdown complete.
-INFO:     Finished server process [97099]
+INFO:     Finished server process [45287]

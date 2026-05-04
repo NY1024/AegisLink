@@ -1,0 +1,16 @@
+{
+  "contact_id": "company",
+  "name": "公司通讯录",
+  "department": "人力资源部",
+  "last_updated": "2026-04-20",
+  "contacts": [
+    {"name": "张三", "department": "技术部-AI平台组", "position": "高级工程师", "email": "zhangsan@company.com", "phone": "13800138001"},
+    {"name": "李四", "department": "市场部", "position": "市场总监", "email": "lisi@company.com", "phone": "13800138002"},
+    {"name": "王五", "department": "销售部", "position": "销售经理", "email": "wangwu@company.com", "phone": "13800138003"},
+    {"name": "赵六", "department": "产品部", "position": "产品经理", "email": "zhaoliu@company.com", "phone": "13800138004"},
+    {"name": "孙七", "department": "财务部", "position": "财务主管", "email": "sunqi@company.com", "phone": "13800138005"},
+    {"name": "周八", "department": "技术部-基础架构组", "position": "运维工程师", "email": "zhouba@company.com", "phone": "13800138006"},
+    {"name": "吴九", "department": "人力资源部", "position": "HR经理", "email": "wujiu@company.com", "phone": "13800138007"},
+    {"name": "郑十", "department": "技术部-AI平台组", "position": "技术负责人", "email": "zhengshi@company.com", "phone": "13800138008"}
+  ]
+}

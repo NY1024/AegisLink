@@ -1,8 +1,16 @@
-INFO:     Started server process [97110]
+INFO:     Started server process [45299]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8003 (Press CTRL+C to quit)
+INFO:     127.0.0.1:58168 - "GET /status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58312 - "GET /search?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhZWdpc2xpbmstaWFtIiwic3ViIjoiYWdlbnQ6ZG9jLWFzc2lzdGFudCIsImFnZW50X2lkIjoiZG9jLWFzc2lzdGFudCIsImFnZW50X3JvbGUiOiJkb2Nfd3JpdGVyIiwidGFyZ2V0X2FnZW50X2lkIjoic2VhcmNoLWFnZW50IiwiYWN0aW9uIjoid2ViOnNlYXJjaCIsInJlc291cmNlIjoid2ViOm1hcmtldC10cmVuZHMiLCJpYXQiOjE3Nzc5MjAxMzQuMjg1NDQ4LCJleHAiOjE3Nzc5MjA3MzQuMjg1NDQ4LCJqdGkiOiJiNzdlZjg4NS1kZDZjLTRlZTItYjMyNS0yYmVhZDM1MjlkODMiLCJkZWxlZ2F0ZWRfdXNlciI6InVzZXI6MTAwMSIsInRydXN0X2NoYWluIjpbeyJhZ2VudF9pZCI6ImRvYy1hc3Npc3RhbnQiLCJ0aW1lc3RhbXAiOjE3Nzc5MjAxMzQuMjg1NDQ4LCJhY3Rpb24iOiJ3ZWI6c2VhcmNoIiwicmVzb3VyY2UiOiJ3ZWI6bWFya2V0LXRyZW5kcyJ9XX0.M67DEj4fOaSbSZ7t2tCTffPtVrzozcrwgjhsCJepa3g&query=market-trends HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:58453 - "OPTIONS /chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58453 - "POST /chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59011 - "GET /search?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhZWdpc2xpbmstaWFtIiwic3ViIjoiYWdlbnQ6ZG9jLWFzc2lzdGFudCIsImFnZW50X2lkIjoiZG9jLWFzc2lzdGFudCIsImFnZW50X3JvbGUiOiJkb2Nfd3JpdGVyIiwidGFyZ2V0X2FnZW50X2lkIjoic2VhcmNoLWFnZW50IiwiYWN0aW9uIjoid2ViOnNlYXJjaCIsInJlc291cmNlIjoid2ViOm1hcmtldC10cmVuZHMiLCJpYXQiOjE3Nzc5MjAyMzAuMjgwNDE2LCJleHAiOjE3Nzc5MjA4MzAuMjgwNDE2LCJqdGkiOiIwOTE2OTBjZi1hOTI4LTRiZTItYWE4OS1mM2RkNjAxYjYzZTUiLCJkZWxlZ2F0ZWRfdXNlciI6InVzZXI6MTAwMSIsInRydXN0X2NoYWluIjpbeyJhZ2VudF9pZCI6ImRvYy1hc3Npc3RhbnQiLCJ0aW1lc3RhbXAiOjE3Nzc5MjAyMzAuMjgwNDE2LCJhY3Rpb24iOiJ3ZWI6c2VhcmNoIiwicmVzb3VyY2UiOiJ3ZWI6bWFya2V0LXRyZW5kcyJ9XX0.WhVfqiebJQRcj4AOUM3imu-m3ZD2q6w0GLQtrnbOjTY&query=market-trends HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:59141 - "POST /chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59276 - "POST /chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59413 - "GET /search?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhZWdpc2xpbmstaWFtIiwic3ViIjoiYWdlbnQ6ZG9jLWFzc2lzdGFudCIsImFnZW50X2lkIjoiZG9jLWFzc2lzdGFudCIsImFnZW50X3JvbGUiOiJkb2Nfd3JpdGVyIiwidGFyZ2V0X2FnZW50X2lkIjoic2VhcmNoLWFnZW50IiwiYWN0aW9uIjoid2ViOnNlYXJjaCIsInJlc291cmNlIjoid2ViOm1hcmtldC10cmVuZHMiLCJpYXQiOjE3Nzc5MjAzMjAuNzExMDcsImV4cCI6MTc3NzkyMDkyMC43MTEwNywianRpIjoiMTQyZjBhNmUtYTcxNy00ZTc2LWFiM2EtNWM3MDU4Y2YxZGE1IiwiZGVsZWdhdGVkX3VzZXIiOiJ1c2VyOjEwMDEiLCJ0cnVzdF9jaGFpbiI6W3siYWdlbnRfaWQiOiJkb2MtYXNzaXN0YW50IiwidGltZXN0YW1wIjoxNzc3OTIwMzIwLjcxMTA3LCJhY3Rpb24iOiJ3ZWI6c2VhcmNoIiwicmVzb3VyY2UiOiJ3ZWI6bWFya2V0LXRyZW5kcyJ9XX0.MK8SHYCTl0ZxdWOG5X-ahp2gWGfeM9WjUEaAnt8XoVU&query=market-trends HTTP/1.1" 403 Forbidden
 INFO:     Shutting down
 INFO:     Waiting for application shutdown.
 INFO:     Application shutdown complete.
-INFO:     Finished server process [97110]
+INFO:     Finished server process [45299]

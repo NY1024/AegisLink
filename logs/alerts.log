@@ -4,3 +4,4 @@
 {'alert_id': 'alert-1777025083955', 'level': 'info', 'message': 'AegisLink IAM服务启动', 'source': 'system', 'timestamp': '2026-04-24T18:04:43.955399+08:00', 'metadata': {'service': 'iam', 'port': 8000}}
 {'alert_id': 'alert-1777025642870', 'level': 'info', 'message': 'AegisLink IAM服务启动', 'source': 'system', 'timestamp': '2026-04-24T18:14:02.870210+08:00', 'metadata': {'service': 'iam', 'port': 8000}}
 {'alert_id': 'alert-1777028785094', 'level': 'info', 'message': 'AegisLink IAM服务启动', 'source': 'system', 'timestamp': '2026-04-24T19:06:25.094116+08:00', 'metadata': {'service': 'iam', 'port': 8000}}
+{'alert_id': 'alert-1777919849038', 'level': 'info', 'message': 'AegisLink IAM服务启动', 'source': 'system', 'timestamp': '2026-05-05T02:37:29.038703+08:00', 'metadata': {'service': 'iam', 'port': 8000}}
