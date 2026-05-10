@@ -4,6 +4,8 @@
 
 AegisLink是一个面向多Agent协作场景的身份与权限管理系统，为AI Agent提供企业级的安全保障。通过JWT Token实现Agent身份认证、基于能力声明的细粒度权限控制、委托授权与动态权限计算、实时越权拦截以及完整的审计追溯能力。
 
+Demo：https://youtu.be/-y_BZ1CITqU
+
 ***
 
 ## 环境配置
